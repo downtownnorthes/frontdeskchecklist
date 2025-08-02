@@ -31,11 +31,14 @@
         .collapsible-header.active + .collapsible-content {
             max-height: 1000px; /* Adjust as needed */
         }
+        #alert-modal {
+            transition: opacity 0.3s ease;
+        }
     </style>
 </head>
 <body class="p-4 sm:p-6 md:p-8">
 
-    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+    <div id="app-container" class="max-w-6xl mx-auto bg-white rounded-2xl shadow-lg p-6 sm:p-8">
 
         <!-- Header Section -->
         <header class="border-b pb-6 mb-6">
@@ -65,7 +68,7 @@
         <main id="checklist-container">
             
             <!-- At a Glance Section -->
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 <div class="bg-gray-50 p-4 rounded-lg">
                     <label for="hskp-name" class="block text-sm font-medium text-gray-700">HSKP Name</label>
                     <input type="text" id="hskp-name" placeholder="Name..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
@@ -101,105 +104,105 @@
                  </div>
             </div>
 
+            <!-- Two-column layout for tasks -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Main Checklist (Left Column) -->
+                <div class="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6">
+                    <h3 class="font-semibold text-xl text-gray-800 mb-4">Shift Tasks</h3>
+                    <ul id="task-list" class="space-y-4 text-gray-700">
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-1" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-1" class="ml-3 block"><span class="task-text">Verify Cash Drawer</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-2" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-2" class="ml-3 block"><span class="task-text">Review Email & Calendar for DAILY EVENTS and Group info resumes.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-3" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-3" class="ml-3 block"><span class="task-text">Print CRM from the Lobby.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-4" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-4" class="ml-3 block"><span class="task-text">Use TRACES and GUEST COMMENTS report to assign rooms.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-5" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-5" class="ml-3 block"><span class="task-text">Discuss with MOD any guests with notes that are NOT ALLOWED TO STAY.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-6" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-6" class="ml-3 block"><span class="task-text">Log into SP2 SYSTEMS and log all engineering and housekeeping requests.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-7" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-7" class="ml-3 block"><span class="task-text">Login into Nor1 Upgrades Portal.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-8" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-8" class="ml-3 block"><span class="task-text">Check for upgrades, Realize or Deny requests 4 days in advance.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-10" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-10" class="ml-3 block"><span class="task-text">Prepare Digital check-in bags.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-11" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-11" class="ml-3 block"><span class="task-text">Complete E-check-in dashboard.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-12" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-12" class="ml-3 block"><span class="task-text">Print Remaining arrivals.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-13" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-13" class="ml-3 block"><span class="task-text">Ensure 7+ night stays have a trace set for 7th day payment.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-14" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-14" class="ml-3 block"><span class="task-text">Ensure 3rd Party Reservations are set up correctly (Rate Hidden, Receipt A Cash, Receipt B Confidential).</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-15" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-15" class="ml-3 block"><span class="task-text">Charge 3rd party CC in advance (ON The Day of).</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-16" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-16" class="ml-3 block"><span class="task-text">Log into SERTIFI.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-17" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-17" class="ml-3 block"><span class="task-text">Process ECONFIRMATIONS and regular CCA FORMS.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-18" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-18" class="ml-3 block"><span class="task-text">View Account Detail > Direct Bill.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-19" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-19" class="ml-3 block"><span class="task-text">Research any Refund Credit cards.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-20" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-20" class="ml-3 block"><span class="task-text">Throughout the day check for NKJB rooms and change to any room available.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-21" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-21" class="ml-3 block"><span class="task-text">Assign pet rooms to 2nd floor and add Trace for HSKP to deep clean.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-22" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-22" class="ml-3 block"><span class="task-text">If digital guest has a pet, ask to move to a pet friendly room and charge pet fee.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-23" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-23" class="ml-3 block"><span class="task-text">Prepare coffee station in lobby after breakfast is over.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-24" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-24" class="ml-3 block"><span class="task-text">Use tape chart in OnQ to clear any gaps in room assignments.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-25" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-25" class="ml-3 block"><span class="task-text">Handle DAY USE rooms based on occupancy (<75% stay, >75% checkout).</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-26" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-26" class="ml-3 block"><span class="task-text">Stock and check freshness of food, drinks, and sundries in Marketplace.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-27" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-27" class="ml-3 block"><span class="task-text">ORDER GRAB AND GO FOOD IF NEEDED (good for 3 days).</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-28" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-28" class="ml-3 block"><span class="task-text">Wipe microwave.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-29" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-29" class="ml-3 block"><span class="task-text">Restock amenities (shaving cream, razors, shampoo, etc.).</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-30" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-30" class="ml-3 block"><span class="task-text">Restock pens, paper, water bags, room keys, parking tags, etc.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-31" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-31" class="ml-3 block"><span class="task-text">Ensure Hilton Honor water bags and snack bags are ready.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-32" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-32" class="ml-3 block"><span class="task-text">Check incoming and outgoing packages and text guest.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-33" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-33" class="ml-3 block"><span class="task-text">If 4 or less rooms to sell, you may sell at lowest of $199 (one night, not extendable).</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-34" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-34" class="ml-3 block"><span class="task-text">Check SP and communicate with HSKP and ENG what is still pending.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-35" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-35" class="ml-3 block"><span class="task-text">Ensure parking for current day reservations and add parking for 2 days in advance.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-36" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-36" class="ml-3 block"><span class="task-text">Count cash drawers 15 minutes before end of shift.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-37" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-37" class="ml-3 block"><span class="task-text">Trace listing (ten mins. before departure).</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-38" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-38" class="ml-3 block"><span class="task-text">Close Accounts (Guest, Shift Balance, Cash & Account under your ID) and drop envelope in safe.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-39" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-39" class="ml-3 block"><span class="task-text">Ensure your Kipsu dashboard Welcome messages to send is clear.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-40" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-40" class="ml-3 block"><span class="task-text">Review Stay Experience comments and close alerts.</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-41" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-41" class="ml-3 block"><span class="task-text">Engage and ask each NON-honors member to join. (Goal: 8/month)</span></label></li>
+                        <li class="task-item flex items-center"><input type="checkbox" id="task-42" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-42" class="ml-3 block"><span class="task-text">Check Digital Dashboard Every 2 Hours.</span></label></li>
+                    </ul>
+                </div>
 
-            <!-- Main Checklist -->
-            <div class="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 class="font-semibold text-xl text-gray-800 mb-4">Shift Tasks</h3>
-                <ul id="task-list" class="space-y-4 text-gray-700">
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-1" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-1" class="ml-3 block"><span class="task-text">Verify Cash Drawer</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-2" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-2" class="ml-3 block"><span class="task-text">Review Email & Calendar for DAILY EVENTS and Group info resumes.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-3" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-3" class="ml-3 block"><span class="task-text">Print CRM from the Lobby.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-4" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-4" class="ml-3 block"><span class="task-text">Use TRACES and GUEST COMMENTS report to assign rooms.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-5" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-5" class="ml-3 block"><span class="task-text">Discuss with MOD any guests with notes that are NOT ALLOWED TO STAY.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-6" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-6" class="ml-3 block"><span class="task-text">Log into SP2 SYSTEMS and log all engineering and housekeeping requests.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-7" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-7" class="ml-3 block"><span class="task-text">Login into Nor1 Upgrades Portal.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-8" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-8" class="ml-3 block"><span class="task-text">Check for upgrades, Realize or Deny requests 4 days in advance.</span></label></li>
-                    
-                    <!-- Packet Section -->
-                    <li id="packet-section">
-                        <div class="space-y-3">
-                            <!-- First Packet -->
-                            <div class="bg-gray-50 rounded-lg border border-gray-200">
-                                <div class="collapsible-header p-3 cursor-pointer flex justify-between items-center">
-                                    <h4 class="font-semibold text-gray-700">First Packet</h4>
-                                    <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </div>
-                                <div class="collapsible-content">
-                                    <ul class="p-4 pt-2 space-y-2 text-gray-600">
-                                        <li class="task-item flex items-center"><input type="checkbox" id="packet1-vips" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet1-vips" class="ml-3 block"><span class="task-text">VIPs</span></label></li>
-                                        <li class="task-item flex items-center"><input type="checkbox" id="packet1-guest-comment" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet1-guest-comment" class="ml-3 block"><span class="task-text">Guest Comment Report</span></label></li>
-                                        <li class="task-item flex items-center"><input type="checkbox" id="packet1-high-balance" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet1-high-balance" class="ml-3 block"><span class="task-text">High Balances</span></label></li>
-                                        <li class="task-item flex items-center"><input type="checkbox" id="packet1-traces" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet1-traces" class="ml-3 block"><span class="task-text">Traces</span></label></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <!-- Second Packet -->
-                            <div class="bg-gray-50 rounded-lg border border-gray-200">
-                                <div class="collapsible-header p-3 cursor-pointer flex justify-between items-center">
-                                    <h4 class="font-semibold text-gray-700">Second Packet</h4>
-                                    <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </div>
-                                <div class="collapsible-content">
-                                    <ul class="p-4 pt-2 space-y-2 text-gray-600">
-                                        <li class="task-item flex items-center"><input type="checkbox" id="packet2-high-balance" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet2-high-balance" class="ml-3 block"><span class="task-text">High Balances</span></label></li>
-                                        <li class="task-item flex items-center"><input type="checkbox" id="packet2-traces" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet2-traces" class="ml-3 block"><span class="task-text">Traces</span></label></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <!-- Third Packet -->
-                            <div class="bg-gray-50 rounded-lg border border-gray-200">
-                                <div class="collapsible-header p-3 cursor-pointer flex justify-between items-center">
-                                    <h4 class="font-semibold text-gray-700">Third Packet</h4>
-                                    <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </div>
-                                <div class="collapsible-content">
-                                    <ul class="p-4 pt-2 space-y-2 text-gray-600">
-                                        <li class="task-item flex items-center"><input type="checkbox" id="packet3-high-balance" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet3-high-balance" class="ml-3 block"><span class="task-text">High Balances</span></label></li>
-                                        <li class="task-item flex items-center"><input type="checkbox" id="packet3-traces" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet3-traces" class="ml-3 block"><span class="task-text">Traces</span></label></li>
-                                    </ul>
-                                </div>
-                            </div>
+                <!-- Packet Sidebar (Right Column) -->
+                <div id="packet-sidebar" class="lg:col-span-1 space-y-4">
+                     <h3 class="font-semibold text-xl text-gray-800 mb-0">Report Packets</h3>
+                    <!-- First Packet -->
+                    <div class="bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="collapsible-header p-3 cursor-pointer flex justify-between items-center">
+                            <h4 class="font-semibold text-gray-700">First Packet (7am)</h4>
+                            <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
-                    </li>
-
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-10" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-10" class="ml-3 block"><span class="task-text">Prepare Digital check-in bags.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-11" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-11" class="ml-3 block"><span class="task-text">Complete E-check-in dashboard.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-12" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-12" class="ml-3 block"><span class="task-text">Print Remaining arrivals.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-13" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-13" class="ml-3 block"><span class="task-text">Ensure 7+ night stays have a trace set for 7th day payment.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-14" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-14" class="ml-3 block"><span class="task-text">Ensure 3rd Party Reservations are set up correctly (Rate Hidden, Receipt A Cash, Receipt B Confidential).</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-15" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-15" class="ml-3 block"><span class="task-text">Charge 3rd party CC in advance (ON The Day of).</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-16" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-16" class="ml-3 block"><span class="task-text">Log into SERTIFI.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-17" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-17" class="ml-3 block"><span class="task-text">Process ECONFIRMATIONS and regular CCA FORMS.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-18" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-18" class="ml-3 block"><span class="task-text">View Account Detail > Direct Bill.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-19" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-19" class="ml-3 block"><span class="task-text">Research any Refund Credit cards.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-20" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-20" class="ml-3 block"><span class="task-text">Throughout the day check for NKJB rooms and change to any room available.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-21" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-21" class="ml-3 block"><span class="task-text">Assign pet rooms to 2nd floor and add Trace for HSKP to deep clean.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-22" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-22" class="ml-3 block"><span class="task-text">If digital guest has a pet, ask to move to a pet friendly room and charge pet fee.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-23" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-23" class="ml-3 block"><span class="task-text">Prepare coffee station in lobby after breakfast is over.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-24" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-24" class="ml-3 block"><span class="task-text">Use tape chart in OnQ to clear any gaps in room assignments.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-25" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-25" class="ml-3 block"><span class="task-text">Handle DAY USE rooms based on occupancy (<75% stay, >75% checkout).</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-26" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-26" class="ml-3 block"><span class="task-text">Stock and check freshness of food, drinks, and sundries in Marketplace.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-27" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-27" class="ml-3 block"><span class="task-text">ORDER GRAB AND GO FOOD IF NEEDED (good for 3 days).</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-28" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-28" class="ml-3 block"><span class="task-text">Wipe microwave.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-29" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-29" class="ml-3 block"><span class="task-text">Restock amenities (shaving cream, razors, shampoo, etc.).</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-30" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-30" class="ml-3 block"><span class="task-text">Restock pens, paper, water bags, room keys, parking tags, etc.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-31" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-31" class="ml-3 block"><span class="task-text">Ensure Hilton Honor water bags and snack bags are ready.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-32" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-32" class="ml-3 block"><span class="task-text">Check incoming and outgoing packages and text guest.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-33" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-33" class="ml-3 block"><span class="task-text">If 4 or less rooms to sell, you may sell at lowest of $199 (one night, not extendable).</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-34" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-34" class="ml-3 block"><span class="task-text">Check SP and communicate with HSKP and ENG what is still pending.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-35" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-35" class="ml-3 block"><span class="task-text">Ensure parking for current day reservations and add parking for 2 days in advance.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-36" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-36" class="ml-3 block"><span class="task-text">Count cash drawers 15 minutes before end of shift.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-37" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-37" class="ml-3 block"><span class="task-text">Trace listing (ten mins. before departure).</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-38" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-38" class="ml-3 block"><span class="task-text">Close Accounts (Guest, Shift Balance, Cash & Account under your ID) and drop envelope in safe.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-39" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-39" class="ml-3 block"><span class="task-text">Ensure your Kipsu dashboard Welcome messages to send is clear.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-40" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-40" class="ml-3 block"><span class="task-text">Review Stay Experience comments and close alerts.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-41" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-41" class="ml-3 block"><span class="task-text">Engage and ask each NON-honors member to join. (Goal: 8/month)</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-42" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-42" class="ml-3 block"><span class="task-text">Check Digital Dashboard Every 2 Hours.</span></label></li>
-                </ul>
+                        <div class="collapsible-content">
+                            <ul class="p-4 pt-2 space-y-2 text-gray-600">
+                                <li class="task-item flex items-center"><input type="checkbox" id="packet1-vips" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet1-vips" class="ml-3 block"><span class="task-text">VIPs</span></label></li>
+                                <li class="task-item flex items-center"><input type="checkbox" id="packet1-guest-comment" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet1-guest-comment" class="ml-3 block"><span class="task-text">Guest Comment Report</span></label></li>
+                                <li class="task-item flex items-center"><input type="checkbox" id="packet1-high-balance" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet1-high-balance" class="ml-3 block"><span class="task-text">High Balances</span></label></li>
+                                <li class="task-item flex items-center"><input type="checkbox" id="packet1-traces" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet1-traces" class="ml-3 block"><span class="task-text">Traces</span></label></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Second Packet -->
+                    <div class="bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="collapsible-header p-3 cursor-pointer flex justify-between items-center">
+                            <h4 class="font-semibold text-gray-700">Second Packet (11am)</h4>
+                            <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                        <div class="collapsible-content">
+                            <ul class="p-4 pt-2 space-y-2 text-gray-600">
+                                <li class="task-item flex items-center"><input type="checkbox" id="packet2-high-balance" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet2-high-balance" class="ml-3 block"><span class="task-text">High Balances</span></label></li>
+                                <li class="task-item flex items-center"><input type="checkbox" id="packet2-traces" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet2-traces" class="ml-3 block"><span class="task-text">Traces</span></label></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Third Packet -->
+                    <div class="bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="collapsible-header p-3 cursor-pointer flex justify-between items-center">
+                            <h4 class="font-semibold text-gray-700">Third Packet (2pm)</h4>
+                            <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                        <div class="collapsible-content">
+                            <ul class="p-4 pt-2 space-y-2 text-gray-600">
+                                <li class="task-item flex items-center"><input type="checkbox" id="packet3-high-balance" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet3-high-balance" class="ml-3 block"><span class="task-text">High Balances</span></label></li>
+                                <li class="task-item flex items-center"><input type="checkbox" id="packet3-traces" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="packet3-traces" class="ml-3 block"><span class="task-text">Traces</span></label></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Notes Section -->
-            <div class="mt-6">
+            <div class="mt-8">
                 <label for="shift-notes" class="block text-lg font-semibold text-gray-700">Shift Report & Notes for Incoming GSAs and MODs</label>
                 <textarea id="shift-notes" rows="4" class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Enter any important notes for the next shift..."></textarea>
             </div>
@@ -208,7 +211,7 @@
 
         <!-- Footer / Actions -->
         <footer class="mt-8 pt-6 border-t flex flex-col sm:flex-row justify-end sm:space-x-4 space-y-3 sm:space-y-0">
-            <button id="export-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors">
+            <button id="export-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 Export to Word
             </button>
             <button id="reset-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors">
@@ -217,10 +220,26 @@
         </footer>
 
     </div>
+    
+    <!-- Alert Modal -->
+    <div id="alert-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden opacity-0">
+        <div class="bg-white p-5 rounded-lg shadow-xl w-11/12 md:w-1/3">
+            <h3 id="alert-title" class="text-lg font-bold text-gray-900">Alert</h3>
+            <div class="mt-2">
+                <p id="alert-message" class="text-sm text-gray-600">Something went wrong.</p>
+            </div>
+            <div class="mt-4 text-right">
+                <button id="alert-close" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const container = document.getElementById('checklist-container');
+            const appContainer = document.getElementById('app-container');
             const inputs = document.querySelectorAll('input[type="checkbox"], input[type="number"], input[type="text"], textarea, select');
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             const progressBar = document.getElementById('progress-bar');
@@ -230,9 +249,29 @@
             const dateInput = document.getElementById('current-date');
             const shiftSelect = document.getElementById('shift-select');
             const collapsibles = document.querySelectorAll('.collapsible-header');
+            
+            // Alert Modal elements
+            const alertModal = document.getElementById('alert-modal');
+            const alertTitle = document.getElementById('alert-title');
+            const alertMessage = document.getElementById('alert-message');
+            const alertClose = document.getElementById('alert-close');
+
 
             // Set current date
             dateInput.valueAsDate = new Date();
+
+            // --- ALERT MODAL ---
+            function showAlert(title, message) {
+                alertTitle.textContent = title;
+                alertMessage.textContent = message;
+                alertModal.classList.remove('hidden');
+                setTimeout(() => alertModal.classList.remove('opacity-0'), 10);
+            }
+            
+            alertClose.addEventListener('click', () => {
+                alertModal.classList.add('opacity-0');
+                setTimeout(() => alertModal.classList.add('hidden'), 300);
+            });
 
             // --- LOCAL STORAGE FUNCTIONS ---
             function saveState() {
@@ -281,10 +320,10 @@
 
             function resetChecklist() {
                 if (confirm('Are you sure you want to reset the entire checklist? This cannot be undone.')) {
-                    document.querySelectorAll('#checklist-container input, #checklist-container textarea').forEach(input => {
-                         if (input.type === 'checkbox') {
+                    inputs.forEach(input => {
+                        if (input.type === 'checkbox') {
                             input.checked = false;
-                        } else {
+                        } else if (input.type !== 'date' && input.type !== 'select-one') {
                             input.value = '';
                         }
                     });
@@ -294,82 +333,88 @@
 
             // --- EXPORT FUNCTION ---
             async function exportToWord() {
-                let reportHtml = `
-                    <h1>Front Desk Shift Report</h1>
-                    <p><strong>Date:</strong> ${dateInput.value}</p>
-                    <p><strong>Shift:</strong> ${shiftSelect.value}</p>
-                    <hr>
-                    <h2>At a Glance</h2>
-                    <ul>
-                        <li><strong>HSKP on Duty:</strong> ${document.getElementById('hskp-name').value || 'N/A'}</li>
-                        <li><strong>Engineer on Duty:</strong> ${document.getElementById('engineer-name').value || 'N/A'}</li>
-                        <li><strong>Projected Occupancy:</strong> ${document.getElementById('occupancy').value || 'N/A'}%</li>
-                        <li><strong>$ Rate:</strong> $${document.getElementById('rate').value || 'N/A'}</li>
-                        <li><strong>Hilton Honor Enrollments:</strong> ${document.getElementById('enrollments').value || 'N/A'}</li>
-                    </ul>
-                    <h2>Meeting Room Parking Passes</h2>
-                     <ul>
-                        <li><strong>Saguaro:</strong> ${document.querySelector('[data-id="saguaro-parking"]').value || '0'}</li>
-                        <li><strong>Cholla:</strong> ${document.querySelector('[data-id="cholla-parking"]').value || '0'}</li>
-                        <li><strong>Navajo:</strong> ${document.querySelector('[data-id="navajo-parking"]').value || '0'}</li>
-                        <li><strong>Yavapai:</strong> ${document.querySelector('[data-id="yavapai-parking"]').value || '0'}</li>
-                        <li><strong>Agave:</strong> ${document.querySelector('[data-id="agave-parking"]').value || '0'}</li>
-                        <li><strong>Atrium:</strong> ${document.querySelector('[data-id="atrium-parking"]').value || '0'}</li>
-                    </ul>
-                    <hr>
-                    <h2>Shift Tasks</h2><ul>`;
+                exportButton.disabled = true;
+                exportButton.textContent = 'Exporting...';
 
-                const taskListItems = document.getElementById('task-list').children;
-                for (const item of taskListItems) {
-                    if (item.id === 'packet-section') {
-                        item.querySelectorAll('.collapsible-header').forEach(header => {
-                            const packetTitle = header.querySelector('h4').textContent;
-                            reportHtml += `<li><strong>${packetTitle}</strong></li>`;
-                            const subTaskList = header.nextElementSibling.querySelector('ul');
-                            reportHtml += `<ul>`;
-                            subTaskList.querySelectorAll('li.task-item').forEach(subtask => {
-                                const checkbox = subtask.querySelector('input[type="checkbox"]');
-                                const label = subtask.querySelector('label').textContent;
-                                const status = checkbox.checked ? '✓ Completed' : '✗ Pending';
-                                reportHtml += `<li><strong>[${status}]</strong> ${label}</li>`;
-                            });
-                            reportHtml += `</ul>`;
-                        });
-                    } else if (item.classList.contains('task-item')) {
+                try {
+                    let reportHtml = `
+                        <h1>Front Desk Shift Report</h1>
+                        <p><strong>Date:</strong> ${dateInput.value}</p>
+                        <p><strong>Shift:</strong> ${shiftSelect.value}</p>
+                        <hr>
+                        <h2>At a Glance</h2>
+                        <ul>
+                            <li><strong>HSKP on Duty:</strong> ${document.getElementById('hskp-name').value || 'N/A'}</li>
+                            <li><strong>Engineer on Duty:</strong> ${document.getElementById('engineer-name').value || 'N/A'}</li>
+                            <li><strong>Projected Occupancy:</strong> ${document.getElementById('occupancy').value || 'N/A'}%</li>
+                            <li><strong>$ Rate:</strong> $${document.getElementById('rate').value || 'N/A'}</li>
+                            <li><strong>Hilton Honor Enrollments:</strong> ${document.getElementById('enrollments').value || 'N/A'}</li>
+                        </ul>
+                        <h2>Meeting Room Parking Passes</h2>
+                         <ul>
+                            <li><strong>Saguaro:</strong> ${document.querySelector('[data-id="saguaro-parking"]').value || '0'}</li>
+                            <li><strong>Cholla:</strong> ${document.querySelector('[data-id="cholla-parking"]').value || '0'}</li>
+                            <li><strong>Navajo:</strong> ${document.querySelector('[data-id="navajo-parking"]').value || '0'}</li>
+                            <li><strong>Yavapai:</strong> ${document.querySelector('[data-id="yavapai-parking"]').value || '0'}</li>
+                            <li><strong>Agave:</strong> ${document.querySelector('[data-id="agave-parking"]').value || '0'}</li>
+                            <li><strong>Atrium:</strong> ${document.querySelector('[data-id="atrium-parking"]').value || '0'}</li>
+                        </ul>
+                        <hr>
+                        <h2>Main Shift Tasks</h2><ul>`;
+
+                    // Get Main tasks
+                    document.querySelectorAll('#task-list .task-item').forEach(item => {
                         const checkbox = item.querySelector('input[type="checkbox"]');
                         const label = item.querySelector('label').textContent;
                         const status = checkbox.checked ? '✓ Completed' : '✗ Pending';
                         reportHtml += `<li><strong>[${status}]</strong> ${label}</li>`;
-                    }
+                    });
+                    reportHtml += `</ul><hr><h2>Report Packets</h2>`;
+
+                    // Get Packet tasks
+                    document.querySelectorAll('#packet-sidebar .collapsible-header').forEach(header => {
+                        const packetTitle = header.querySelector('h4').textContent;
+                        reportHtml += `<p><strong>${packetTitle}</strong></p><ul>`;
+                        const subTaskList = header.nextElementSibling.querySelector('ul');
+                        subTaskList.querySelectorAll('li.task-item').forEach(subtask => {
+                            const checkbox = subtask.querySelector('input[type="checkbox"]');
+                            const label = subtask.querySelector('label').textContent;
+                            const status = checkbox.checked ? '✓ Completed' : '✗ Pending';
+                            reportHtml += `<li><strong>[${status}]</strong> ${label}</li>`;
+                        });
+                        reportHtml += `</ul>`;
+                    });
+                    
+
+                    reportHtml += `<hr><h2>Shift Report & Notes</h2>`;
+                    const notes = document.getElementById('shift-notes').value.replace(/\n/g, '<br>');
+                    reportHtml += `<p>${notes || 'No notes entered.'}</p>`;
+
+                    const blob = await htmlToDocx.asBlob(reportHtml, {
+                        orientation: 'portrait',
+                        margins: { top: 720, bottom: 720, left: 720, right: 720 }
+                    });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `FrontDeskReport-${dateInput.value}-${shiftSelect.value}.docx`;
+                    document.body.appendChild(a);
+a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                } catch (error) {
+                    console.error('Export failed:', error);
+                    showAlert('Export Failed', 'An error occurred while trying to generate the Word document. Please try again.');
+                } finally {
+                    exportButton.disabled = false;
+                    exportButton.textContent = 'Export to Word';
                 }
-                reportHtml += `</ul>`;
-
-                reportHtml += `<hr><h2>Shift Report & Notes</h2>`;
-                const notes = document.getElementById('shift-notes').value.replace(/\n/g, '<br>');
-                reportHtml += `<p>${notes || 'No notes entered.'}</p>`;
-
-                const blob = await htmlToDocx.asBlob(reportHtml, {
-                    orientation: 'portrait',
-                    margins: {
-                        top: 720, // 1 inch
-                        bottom: 720,
-                        left: 720,
-                        right: 720
-                    }
-                });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `FrontDeskReport-${dateInput.value}-${shiftSelect.value}.docx`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
             }
 
 
             // --- EVENT LISTENERS ---
-            document.body.addEventListener('change', saveState);
+            appContainer.addEventListener('change', saveState);
             resetButton.addEventListener('click', resetChecklist);
             exportButton.addEventListener('click', exportToWord);
 
