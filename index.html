@@ -6,8 +6,9 @@
     <title>Front Desk Checklist</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Library for exporting to Word -->
+    <!-- Libraries for exporting to Word and saving files -->
     <script src="https://unpkg.com/html-to-docx@1.8.0/dist/html-to-docx.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -211,11 +212,14 @@
 
         <!-- Footer / Actions -->
         <footer class="mt-8 pt-6 border-t flex flex-col sm:flex-row justify-end sm:space-x-4 space-y-3 sm:space-y-0">
+            <button id="email-button" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors">
+                Copy Report for Email
+            </button>
             <button id="export-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 Export to Word
             </button>
             <button id="reset-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors">
-                Reset Checklist for Next Shift
+                Reset Checklist
             </button>
         </footer>
 
@@ -238,14 +242,17 @@
 
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // We wrap the entire script in window.onload to ensure that external 
+        // libraries (html-to-docx, FileSaver) are fully loaded before we try to use them.
+        window.onload = function() {
             const appContainer = document.getElementById('app-container');
-            const inputs = document.querySelectorAll('input[type="checkbox"], input[type="number"], input[type="text"], textarea, select');
+            const inputs = document.querySelectorAll('input[type="checkbox"], input[type="number"], input[type="text"], input[type="email"], textarea, select');
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             const progressBar = document.getElementById('progress-bar');
             const progressText = document.getElementById('progress-text');
             const resetButton = document.getElementById('reset-button');
             const exportButton = document.getElementById('export-button');
+            const emailButton = document.getElementById('email-button');
             const dateInput = document.getElementById('current-date');
             const shiftSelect = document.getElementById('shift-select');
             const collapsibles = document.querySelectorAll('.collapsible-header');
@@ -319,89 +326,135 @@
             }
 
             function resetChecklist() {
-                if (confirm('Are you sure you want to reset the entire checklist? This cannot be undone.')) {
-                    inputs.forEach(input => {
-                        if (input.type === 'checkbox') {
-                            input.checked = false;
-                        } else if (input.type !== 'date' && input.type !== 'select-one') {
-                            input.value = '';
-                        }
-                    });
-                    saveState();
-                }
+                inputs.forEach(input => {
+                    if (input.type === 'checkbox') {
+                        input.checked = false;
+                    } else if (input.type !== 'date' && input.type !== 'select-one') {
+                        input.value = '';
+                    }
+                });
+                saveState();
+                showAlert('Checklist Reset', 'The checklist has been cleared for the next shift.');
             }
 
-            // --- EXPORT FUNCTION ---
+            // --- REPORT GENERATION ---
+            function generateReportHtml() {
+                 let reportHtml = `
+                    <h1>Front Desk Shift Report</h1>
+                    <p><strong>Date:</strong> ${dateInput.value}</p>
+                    <p><strong>Shift:</strong> ${shiftSelect.value}</p>
+                    <hr>
+                    <h2>At a Glance</h2>
+                    <ul>
+                        <li><strong>HSKP on Duty:</strong> ${document.getElementById('hskp-name').value || 'N/A'}</li>
+                        <li><strong>Engineer on Duty:</strong> ${document.getElementById('engineer-name').value || 'N/A'}</li>
+                        <li><strong>Projected Occupancy:</strong> ${document.getElementById('occupancy').value || 'N/A'}%</li>
+                        <li><strong>$ Rate:</strong> $${document.getElementById('rate').value || 'N/A'}</li>
+                        <li><strong>Hilton Honor Enrollments:</strong> ${document.getElementById('enrollments').value || 'N/A'}</li>
+                    </ul>
+                    <h2>Meeting Room Parking Passes</h2>
+                     <ul>
+                        <li><strong>Saguaro:</strong> ${document.querySelector('[data-id="saguaro-parking"]').value || '0'}</li>
+                        <li><strong>Cholla:</strong> ${document.querySelector('[data-id="cholla-parking"]').value || '0'}</li>
+                        <li><strong>Navajo:</strong> ${document.querySelector('[data-id="navajo-parking"]').value || '0'}</li>
+                        <li><strong>Yavapai:</strong> ${document.querySelector('[data-id="yavapai-parking"]').value || '0'}</li>
+                        <li><strong>Agave:</strong> ${document.querySelector('[data-id="agave-parking"]').value || '0'}</li>
+                        <li><strong>Atrium:</strong> ${document.querySelector('[data-id="atrium-parking"]').value || '0'}</li>
+                    </ul>
+                    <hr>
+                    <h2>Main Shift Tasks</h2><ul>`;
+
+                document.querySelectorAll('#task-list .task-item').forEach(item => {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    const label = item.querySelector('label').textContent;
+                    const status = checkbox.checked ? '✓ Completed' : '✗ Pending';
+                    reportHtml += `<li><strong>[${status}]</strong> ${label}</li>`;
+                });
+                reportHtml += `</ul><hr><h2>Report Packets</h2>`;
+
+                document.querySelectorAll('#packet-sidebar .collapsible-header').forEach(header => {
+                    const packetTitle = header.querySelector('h4').textContent;
+                    reportHtml += `<p><strong>${packetTitle}</strong></p><ul>`;
+                    const subTaskList = header.nextElementSibling.querySelector('ul');
+                    subTaskList.querySelectorAll('li.task-item').forEach(subtask => {
+                        const checkbox = subtask.querySelector('input[type="checkbox"]');
+                        const label = subtask.querySelector('label').textContent;
+                        const status = checkbox.checked ? '✓ Completed' : '✗ Pending';
+                        reportHtml += `<li><strong>[${status}]</strong> ${label}</li>`;
+                    });
+                    reportHtml += `</ul>`;
+                });
+                
+                reportHtml += `<hr><h2>Shift Report & Notes</h2>`;
+                const notes = document.getElementById('shift-notes').value.replace(/\n/g, '<br>');
+                reportHtml += `<p>${notes || 'No notes entered.'}</p>`;
+
+                return reportHtml;
+            }
+            
+            function generateReportPlainText() {
+                let reportText = `FRONT DESK SHIFT REPORT\n`;
+                reportText += `Date: ${dateInput.value}\n`;
+                reportText += `Shift: ${shiftSelect.value}\n`;
+                reportText += `------------------------------\n\n`;
+                reportText += `AT A GLANCE\n`;
+                reportText += `* HSKP on Duty: ${document.getElementById('hskp-name').value || 'N/A'}\n`;
+                reportText += `* Engineer on Duty: ${document.getElementById('engineer-name').value || 'N/A'}\n`;
+                reportText += `* Projected Occupancy: ${document.getElementById('occupancy').value || 'N/A'}%\n`;
+                reportText += `* $ Rate: $${document.getElementById('rate').value || 'N/A'}\n`;
+                reportText += `* Hilton Honor Enrollments: ${document.getElementById('enrollments').value || 'N/A'}\n\n`;
+                
+                reportText += `MEETING ROOM PARKING PASSES\n`;
+                reportText += `* Saguaro: ${document.querySelector('[data-id="saguaro-parking"]').value || '0'}\n`;
+                reportText += `* Cholla: ${document.querySelector('[data-id="cholla-parking"]').value || '0'}\n`;
+                reportText += `* Navajo: ${document.querySelector('[data-id="navajo-parking"]').value || '0'}\n`;
+                reportText += `* Yavapai: ${document.querySelector('[data-id="yavapai-parking"]').value || '0'}\n`;
+                reportText += `* Agave: ${document.querySelector('[data-id="agave-parking"]').value || '0'}\n`;
+                reportText += `* Atrium: ${document.querySelector('[data-id="atrium-parking"]').value || '0'}\n\n`;
+
+                reportText += `------------------------------\n`;
+                reportText += `MAIN SHIFT TASKS\n`;
+                document.querySelectorAll('#task-list .task-item').forEach(item => {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    const label = item.querySelector('label').textContent;
+                    const status = checkbox.checked ? '[✓]' : '[ ]';
+                    reportText += `${status} ${label}\n`;
+                });
+                
+                reportText += `\n------------------------------\n`;
+                reportText += `REPORT PACKETS\n`;
+                 document.querySelectorAll('#packet-sidebar .collapsible-header').forEach(header => {
+                    const packetTitle = header.querySelector('h4').textContent;
+                    reportText += `\n${packetTitle.toUpperCase()}\n`;
+                    const subTaskList = header.nextElementSibling.querySelector('ul');
+                    subTaskList.querySelectorAll('li.task-item').forEach(subtask => {
+                        const checkbox = subtask.querySelector('input[type="checkbox"]');
+                        const label = subtask.querySelector('label').textContent;
+                        const status = checkbox.checked ? '[✓]' : '[ ]';
+                        reportText += `  ${status} ${label}\n`;
+                    });
+                });
+
+                reportText += `\n------------------------------\n`;
+                reportText += `SHIFT REPORT & NOTES\n`;
+                reportText += `${document.getElementById('shift-notes').value || 'No notes entered.'}\n`;
+
+                return reportText;
+            }
+
+            // --- EXPORT/EMAIL FUNCTIONS ---
             async function exportToWord() {
                 exportButton.disabled = true;
                 exportButton.textContent = 'Exporting...';
 
                 try {
-                    let reportHtml = `
-                        <h1>Front Desk Shift Report</h1>
-                        <p><strong>Date:</strong> ${dateInput.value}</p>
-                        <p><strong>Shift:</strong> ${shiftSelect.value}</p>
-                        <hr>
-                        <h2>At a Glance</h2>
-                        <ul>
-                            <li><strong>HSKP on Duty:</strong> ${document.getElementById('hskp-name').value || 'N/A'}</li>
-                            <li><strong>Engineer on Duty:</strong> ${document.getElementById('engineer-name').value || 'N/A'}</li>
-                            <li><strong>Projected Occupancy:</strong> ${document.getElementById('occupancy').value || 'N/A'}%</li>
-                            <li><strong>$ Rate:</strong> $${document.getElementById('rate').value || 'N/A'}</li>
-                            <li><strong>Hilton Honor Enrollments:</strong> ${document.getElementById('enrollments').value || 'N/A'}</li>
-                        </ul>
-                        <h2>Meeting Room Parking Passes</h2>
-                         <ul>
-                            <li><strong>Saguaro:</strong> ${document.querySelector('[data-id="saguaro-parking"]').value || '0'}</li>
-                            <li><strong>Cholla:</strong> ${document.querySelector('[data-id="cholla-parking"]').value || '0'}</li>
-                            <li><strong>Navajo:</strong> ${document.querySelector('[data-id="navajo-parking"]').value || '0'}</li>
-                            <li><strong>Yavapai:</strong> ${document.querySelector('[data-id="yavapai-parking"]').value || '0'}</li>
-                            <li><strong>Agave:</strong> ${document.querySelector('[data-id="agave-parking"]').value || '0'}</li>
-                            <li><strong>Atrium:</strong> ${document.querySelector('[data-id="atrium-parking"]').value || '0'}</li>
-                        </ul>
-                        <hr>
-                        <h2>Main Shift Tasks</h2><ul>`;
-
-                    // Get Main tasks
-                    document.querySelectorAll('#task-list .task-item').forEach(item => {
-                        const checkbox = item.querySelector('input[type="checkbox"]');
-                        const label = item.querySelector('label').textContent;
-                        const status = checkbox.checked ? '✓ Completed' : '✗ Pending';
-                        reportHtml += `<li><strong>[${status}]</strong> ${label}</li>`;
-                    });
-                    reportHtml += `</ul><hr><h2>Report Packets</h2>`;
-
-                    // Get Packet tasks
-                    document.querySelectorAll('#packet-sidebar .collapsible-header').forEach(header => {
-                        const packetTitle = header.querySelector('h4').textContent;
-                        reportHtml += `<p><strong>${packetTitle}</strong></p><ul>`;
-                        const subTaskList = header.nextElementSibling.querySelector('ul');
-                        subTaskList.querySelectorAll('li.task-item').forEach(subtask => {
-                            const checkbox = subtask.querySelector('input[type="checkbox"]');
-                            const label = subtask.querySelector('label').textContent;
-                            const status = checkbox.checked ? '✓ Completed' : '✗ Pending';
-                            reportHtml += `<li><strong>[${status}]</strong> ${label}</li>`;
-                        });
-                        reportHtml += `</ul>`;
-                    });
-                    
-
-                    reportHtml += `<hr><h2>Shift Report & Notes</h2>`;
-                    const notes = document.getElementById('shift-notes').value.replace(/\n/g, '<br>');
-                    reportHtml += `<p>${notes || 'No notes entered.'}</p>`;
-
+                    const reportHtml = generateReportHtml();
                     const blob = await htmlToDocx.asBlob(reportHtml, {
                         orientation: 'portrait',
                         margins: { top: 720, bottom: 720, left: 720, right: 720 }
                     });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `FrontDeskReport-${dateInput.value}-${shiftSelect.value}.docx`;
-                    document.body.appendChild(a);
-a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
+                    
+                    saveAs(blob, `FrontDeskReport-${dateInput.value}-${shiftSelect.value}.docx`);
 
                 } catch (error) {
                     console.error('Export failed:', error);
@@ -412,11 +465,53 @@ a.click();
                 }
             }
 
+            function copyReportForEmail() {
+                const reportText = generateReportPlainText();
+                
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(reportText).then(() => {
+                        showAlert('Report Copied', 'The report has been copied to your clipboard. You can now paste it into an email.');
+                    }).catch(err => {
+                        console.error('Could not copy text using navigator: ', err);
+                        fallbackCopyTextToClipboard(reportText);
+                    });
+                } else {
+                    fallbackCopyTextToClipboard(reportText);
+                }
+            }
+
+            function fallbackCopyTextToClipboard(text) {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                
+                textArea.style.top = "0";
+                textArea.style.left = "0";
+                textArea.style.position = "fixed";
+
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+
+                try {
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        showAlert('Report Copied', 'The report has been copied to your clipboard. You can now paste it into an email.');
+                    } else {
+                         showAlert('Copy Failed', 'Could not copy the report automatically. Please copy the text manually.');
+                    }
+                } catch (err) {
+                    console.error('Fallback copy failed', err);
+                    showAlert('Copy Failed', 'Could not copy the report automatically. Please copy the text manually.');
+                }
+
+                document.body.removeChild(textArea);
+            }
 
             // --- EVENT LISTENERS ---
             appContainer.addEventListener('change', saveState);
             resetButton.addEventListener('click', resetChecklist);
             exportButton.addEventListener('click', exportToWord);
+            emailButton.addEventListener('click', copyReportForEmail);
 
             collapsibles.forEach(header => {
                 header.addEventListener('click', function() {
@@ -428,7 +523,7 @@ a.click();
 
             // --- INITIALIZATION ---
             loadState();
-        });
+        };
     </script>
 
 </body>
