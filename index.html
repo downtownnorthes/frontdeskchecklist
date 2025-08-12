@@ -242,9 +242,9 @@
 
 
     <script>
-        // We wrap the entire script in window.onload to ensure that external 
-        // libraries (html-to-docx, FileSaver) are fully loaded before we try to use them.
-        window.onload = function() {
+        // We wrap the entire script in a function that runs after the page is fully loaded.
+        // This ensures that external libraries (html-to-docx, FileSaver) are available.
+        function initializeApp() {
             const appContainer = document.getElementById('app-container');
             const inputs = document.querySelectorAll('input[type="checkbox"], input[type="number"], input[type="text"], input[type="email"], textarea, select');
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
@@ -524,6 +524,14 @@
             // --- INITIALIZATION ---
             loadState();
         };
+        
+        // This ensures the initializeApp function runs only after the window, 
+        // including all scripts, is fully loaded.
+        if (document.readyState === 'complete') {
+          initializeApp();
+        } else {
+          window.addEventListener('load', initializeApp);
+        }
     </script>
 
 </body>
