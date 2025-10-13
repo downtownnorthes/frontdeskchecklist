@@ -14,12 +14,35 @@
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
         }
+        /* Blurred background image */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 100vw;
+            background-image: url('https://i.imgur.com/HvlIXI0.jpeg');
+            background-size: cover;
+            background-position: center;
+            filter: blur(10px);
+            z-index: -1;
+        }
+
         html.dark body {
             background-color: #111827;
         }
 
+        #app-container {
+             background-color: rgba(255, 255, 255, 0.9);
+             backdrop-filter: blur(5px);
+        }
+
         /* Dark Mode Styles */
-        html.dark #app-container { background-color: #1f2937; }
+        html.dark #app-container { 
+            background-color: rgba(31, 41, 55, 0.85);
+            backdrop-filter: blur(5px);
+        }
         html.dark h1, html.dark h3, html.dark h4, html.dark .task-section-header { color: #f9fafb; }
         html.dark p, html.dark label, html.dark .task-text { color: #d1d5db; }
         html.dark header { border-bottom-color: #374151; }
@@ -28,10 +51,10 @@
             border-color: #4b5563;
             color: #f9fafb;
         }
-        html.dark .bg-gray-50 { background-color: #374151; }
-        html.dark .bg-blue-50 { background-color: #1e3a8a; border-color: #1e40af; }
+        html.dark .bg-gray-50 { background-color: rgba(55, 65, 81, 0.7); }
+        html.dark .bg-blue-50 { background-color: rgba(30, 58, 138, 0.7); border-color: #1e40af; }
         html.dark .text-blue-800 { color: #93c5fd; }
-        html.dark .bg-white.rounded-lg { background-color: #374151; border-color: #4b5563; }
+        html.dark .bg-white.rounded-lg { background-color: rgba(55, 65, 81, 0.7); border-color: #4b5563; }
         html.dark footer { border-top-color: #374151; }
 
         .task-item input:checked + label {
@@ -94,7 +117,7 @@
 </head>
 <body class="p-4 sm:p-6 md:p-8">
 
-    <div id="app-container" class="max-w-6xl mx-auto bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+    <div id="app-container" class="max-w-6xl mx-auto rounded-2xl shadow-lg p-6 sm:p-8">
 
         <!-- Header Section -->
         <header class="border-b pb-6 mb-6">
