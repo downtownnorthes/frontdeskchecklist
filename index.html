@@ -1,493 +1,908 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Front Desk Checklist</title>
+    <title>Hotel Guest Information</title>
+    <meta name="description" content="Guest information, dining, amenities, and Wi-Fi access for Embassy Suites Downtown North.">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        html.dark {
-            color-scheme: dark;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-        }
-        /* Blurred background image */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: 100vw;
-            background-image: url('https://i.imgur.com/HvlIXI0.jpeg');
-            background-size: cover;
-            background-position: center;
-            filter: blur(10px);
-            z-index: -1;
-        }
-
-        html.dark body {
-            background-color: #111827;
-        }
-
-        #app-container {
-             background-color: rgba(255, 255, 255, 0.9);
-             backdrop-filter: blur(5px);
-        }
-
-        /* Dark Mode Styles */
-        html.dark #app-container { 
-            background-color: rgba(31, 41, 55, 0.85);
-            backdrop-filter: blur(5px);
-        }
-        html.dark h1, html.dark h3, html.dark h4, html.dark .task-section-header { color: #f9fafb; }
-        html.dark p, html.dark label, html.dark .task-text { color: #d1d5db; }
-        html.dark header { border-bottom-color: #374151; }
-        html.dark .form-input, html.dark .form-select, html.dark textarea {
-            background-color: #374151;
-            border-color: #4b5563;
-            color: #f9fafb;
-        }
-        html.dark .bg-gray-50 { background-color: rgba(55, 65, 81, 0.7); }
-        html.dark .bg-blue-50 { background-color: rgba(30, 58, 138, 0.7); border-color: #1e40af; }
-        html.dark .text-blue-800 { color: #93c5fd; }
-        html.dark .bg-white.rounded-lg { background-color: rgba(55, 65, 81, 0.7); border-color: #4b5563; }
-        html.dark footer { border-top-color: #374151; }
-
-        .task-item input:checked + label {
-            text-decoration: line-through;
-            color: #6b7280;
-        }
-        html.dark .task-item input:checked + label {
-            color: #9ca3af;
-        }
-        .task-item input:checked + label .task-text {
-            opacity: 0.7;
-        }
-        .progress-bar-fill {
-            transition: width 0.5s ease-in-out;
-        }
-        #alert-modal {
-            transition: opacity 0.3s ease;
-        }
-        /* Toggle Switch CSS */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 28px;
-        }
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 28px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider {
-            background-color: #2563eb;
-        }
-        input:checked + .slider:before {
-            transform: translateX(22px);
-        }
-    </style>
-</head>
-<body class="p-4 sm:p-6 md:p-8">
-
-    <div id="app-container" class="max-w-6xl mx-auto rounded-2xl shadow-lg p-6 sm:p-8">
-
-        <!-- Header Section -->
-        <header class="border-b pb-6 mb-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-800">Front Desk Checklist</h1>
-                    <p class="text-gray-500 mt-1">Interactive checklist for daily front desk operations.</p>
-                </div>
-                <div class="mt-4 sm:mt-0 flex items-center space-x-4">
-                    <input type="date" id="current-date" class="form-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                    <select id="shift-select" class="form-select rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                        <option>AM</option>
-                        <option>PM</option>
-                        <option>Night</option>
-                    </select>
-                    <!-- Dark Mode Toggle -->
-                    <label for="dark-mode-toggle" class="toggle-switch">
-                        <input type="checkbox" id="dark-mode-toggle">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-            <div class="mt-6">
-                <div class="w-full bg-gray-200 rounded-full h-2.5">
-                    <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full progress-bar-fill" style="width: 0%"></div>
-                </div>
-                <p id="progress-text" class="text-center text-sm text-gray-600 mt-2">0% Complete</p>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main id="checklist-container">
-            
-            <!-- At a Glance Section -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <label for="hskp-name" class="block text-sm font-medium text-gray-700">HSKP Name</label>
-                    <input type="text" id="hskp-name" placeholder="Name..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <label for="engineer-name" class="block text-sm font-medium text-gray-700">Engineer Name</label>
-                    <input type="text" id="engineer-name" placeholder="Name..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <label for="arrivals" class="block text-sm font-medium text-gray-700">Arrivals</label>
-                    <input type="number" id="arrivals" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                </div>
-                 <div class="bg-gray-50 p-4 rounded-lg">
-                    <label for="departures" class="block text-sm font-medium text-gray-700">Departures</label>
-                    <input type="number" id="departures" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <label for="occupancy" class="block text-sm font-medium text-gray-700">Projected Occupancy %</label>
-                    <input type="number" id="occupancy" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <label for="rate" class="block text-sm font-medium text-gray-700">$ Rate</label>
-                    <input type="number" id="rate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <label for="enrollments" class="block text-sm font-medium text-gray-700">Hilton Honor Enrollments</label>
-                    <input type="number" id="enrollments" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <label for="stayplatform-comments" class="block text-sm font-medium text-gray-700">StayPlatform Comments Reviewed</label>
-                    <select id="stayplatform-comments" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option>No</option>
-                        <option>Yes</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Meeting Rooms Section -->
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                 <h3 class="font-semibold text-lg text-blue-800 mb-3">Meeting Room Parking Passes</h3>
-                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-                     <div><label class="block text-sm">Saguaro</label><input type="number" data-id="saguaro-parking" class="mt-1 w-full form-input rounded-md border-gray-300"></div>
-                     <div><label class="block text-sm">Cholla</label><input type="number" data-id="cholla-parking" class="mt-1 w-full form-input rounded-md border-gray-300"></div>
-                     <div><label class="block text-sm">Navajo</label><input type="number" data-id="navajo-parking" class="mt-1 w-full form-input rounded-md border-gray-300"></div>
-                     <div><label class="block text-sm">Yavapai</label><input type="number" data-id="yavapai-parking" class="mt-1 w-full form-input rounded-md border-gray-300"></div>
-                     <div><label class="block text-sm">Agave</label><input type="number" data-id="agave-parking" class="mt-1 w-full form-input rounded-md border-gray-300"></div>
-                     <div><label class="block text-sm">Atrium</label><input type="number" data-id="atrium-parking" class="mt-1 w-full form-input rounded-md border-gray-300"></div>
-                 </div>
-            </div>
-
-            <!-- Main Checklist -->
-            <div class="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 class="font-semibold text-xl text-gray-800 mb-4">Shift Tasks</h3>
-                <ul id="task-list" class="space-y-4 text-gray-700">
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-1" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-1" class="ml-3 block"><span class="task-text">Verify Cash Drawer.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-2" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-2" class="ml-3 block"><span class="task-text">Log into Pep and start your shift.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-3" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-3" class="ml-3 block"><span class="task-text">Check email & calendar for DAILY EVENTS & Group info resumes.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-4" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-4" class="ml-3 block"><span class="task-text">Ensure workstation is clean, stocked, and presentable.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-5" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-5" class="ml-3 block"><span class="task-text">Log into SP2 SYSTEMS and log all engineering and housekeeping requests.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-6" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-6" class="ml-3 block"><span class="task-text">Login into Kipsu and respond and communicate guests needs or challenges.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-7" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-7" class="ml-3 block"><span class="task-text">Login into NOR1. Check for upgrades. Realize or Deny requests 4 days in advance.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-8" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-8" class="ml-3 block"><span class="task-text">Print 30 Welcome letters - Double sided on the short edge and Landscape.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-9" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-9" class="ml-3 block"><span class="task-text">Reminders Report: Follow up on pending items from previous shifts.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-10" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-10" class="ml-3 block"><span class="task-text">Arrival Report: Set up 3rd party reservations, check remarks, pets, etc.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-11" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-11" class="ml-3 block"><span class="task-text">Arrival Report: Set up Hilton ADVANCE PURCHASE SRPs & ensure direct bill is correct.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-12" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-12" class="ml-3 block"><span class="task-text">High Balance Report: Investigate high balances and communicate to MOD.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-13" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-13" class="ml-3 block"><span class="task-text">Digital Arrivals Report: Prepare Digital check-in bags.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-14" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-14" class="ml-3 block"><span class="task-text">Login into SERTIFI and process ECONFIRMATIONS and CCA FORMS.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-15" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-15" class="ml-3 block"><span class="task-text">Use tape chart on main screen to clear any gaps in room assignments.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-16" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-16" class="ml-3 block"><span class="task-text">Throughout the day check for NKJB rooms and change to any room available.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-17" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-17" class="ml-3 block"><span class="task-text">Prepare coffee station in lobby after breakfast is over.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-18" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-18" class="ml-3 block"><span class="task-text">Handle DAY USE rooms based on occupancy (<75% stay, >75% checkout).</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-19" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-19" class="ml-3 block"><span class="task-text">Stock and check freshness of food, drinks, and sundries in Marketplace.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-20" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-20" class="ml-3 block"><span class="task-text">ORDER GRAB AND GO FOOD IF NEEDED (good for 3 days).</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-21" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-21" class="ml-3 block"><span class="task-text">Restock amenities (shaving cream, razors, etc.).</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-22" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-22" class="ml-3 block"><span class="task-text">Restock pens, paper, water bags, room keys, menus, etc.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-23" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-23" class="ml-3 block"><span class="task-text">Ensure Hilton Honor water bags and snack bags are ready.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-24" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-24" class="ml-3 block"><span class="task-text">Check incoming and outgoing packages. Text guest.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-25" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-25" class="ml-3 block"><span class="task-text">If 4 or less rooms to sell, you may sell at lowest of $199 (one night, not extendable).</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-26" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-26" class="ml-3 block"><span class="task-text">Check SP and communicate with HSKP and ENG what is still pending.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-27" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-27" class="ml-3 block"><span class="task-text">Count cash drawers 15 minutes before end of shift.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-28" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-28" class="ml-3 block"><span class="task-text">Leave Shift report and Notes for incoming GSAs and MODs.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-29" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-29" class="ml-3 block"><span class="task-text">Ensure your Kipsu dashboard Welcome messages to send is clear.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-30" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-30" class="ml-3 block"><span class="task-text">Review Stay Experience comments and close alerts.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-31" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-31" class="ml-3 block"><span class="task-text">Engage and ask each non-honors member to join. (Goal: 8/month)</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-32" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-32" class="ml-3 block"><span class="task-text">Check Digital Dashboard Every 2 Hours.</span></label></li>
-                    <li class="task-item flex items-center"><input type="checkbox" id="task-33" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"><label for="task-33" class="ml-3 block"><span class="task-text">End your Shift.</span></label></li>
-                </ul>
-            </div>
-            
-            <!-- Notes Section -->
-            <div class="mt-8">
-                <label for="shift-notes" class="block text-lg font-semibold text-gray-700">Shift Report & Notes for Incoming GSAs and MODs</label>
-                <textarea id="shift-notes" rows="4" class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Enter any important notes for the next shift..."></textarea>
-            </div>
-
-        </main>
-
-        <!-- Footer / Actions -->
-        <footer class="mt-8 pt-6 border-t flex flex-col sm:flex-row justify-end sm:space-x-4 space-y-3 sm:space-y-0">
-             <button id="print-pdf-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors">
-                Print / Save as PDF
-            </button>
-            <button id="reset-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow transition-colors">
-                Reset Checklist
-            </button>
-        </footer>
-
-    </div>
-    
-    <!-- Alert Modal -->
-    <div id="alert-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden opacity-0">
-        <div class="bg-white p-5 rounded-lg shadow-xl w-11/12 md:w-1/3">
-            <h3 id="alert-title" class="text-lg font-bold text-gray-900">Alert</h3>
-            <div class="mt-2">
-                <p id="alert-message" class="text-sm text-gray-600">Something went wrong.</p>
-            </div>
-            <div class="mt-4 text-right">
-                <button id="alert-close" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                    Close
-                </button>
-            </div>
-        </div>
-    </div>
-
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <script>
-        // We wrap the entire script in a function that runs after the page is fully loaded.
-        function initializeApp() {
-            const appContainer = document.getElementById('app-container');
-            const inputs = document.querySelectorAll('input[type="checkbox"], input[type="number"], input[type="text"], textarea, select');
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            const progressBar = document.getElementById('progress-bar');
-            const progressText = document.getElementById('progress-text');
-            const resetButton = document.getElementById('reset-button');
-            const printPdfButton = document.getElementById('print-pdf-button');
-            const dateInput = document.getElementById('current-date');
-            const shiftSelect = document.getElementById('shift-select');
-            const darkModeToggle = document.getElementById('dark-mode-toggle');
-            
-            // Alert Modal elements
-            const alertModal = document.getElementById('alert-modal');
-            const alertTitle = document.getElementById('alert-title');
-            const alertMessage = document.getElementById('alert-message');
-            const alertClose = document.getElementById('alert-close');
-
-
-            // Set current date
-            dateInput.valueAsDate = new Date();
-
-            // --- DARK MODE ---
-            function applyDarkMode(isDark) {
-                if (isDark) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-            }
-
-            darkModeToggle.addEventListener('change', (e) => {
-                applyDarkMode(e.target.checked);
-                saveState();
-            });
-
-            // --- ALERT MODAL ---
-            function showAlert(title, message) {
-                alertTitle.textContent = title;
-                alertMessage.textContent = message;
-                alertModal.classList.remove('hidden');
-                setTimeout(() => alertModal.classList.remove('opacity-0'), 10);
-            }
-            
-            alertClose.addEventListener('click', () => {
-                alertModal.classList.add('opacity-0');
-                setTimeout(() => alertModal.classList.add('hidden'), 300);
-            });
-
-            // --- LOCAL STORAGE FUNCTIONS ---
-            function saveState() {
-                const state = {
-                    darkMode: darkModeToggle.checked
-                };
-                inputs.forEach(input => {
-                    const id = input.id || input.dataset.id;
-                    if (!id) return;
-
-                    if (input.type === 'checkbox') {
-                        state[id] = input.checked;
-                    } else {
-                        state[id] = input.value;
-                    }
-                });
-                localStorage.setItem('frontDeskChecklistState', JSON.stringify(state));
-                updateProgress();
-            }
-
-            function loadState() {
-                const state = JSON.parse(localStorage.getItem('frontDeskChecklistState'));
-                if (state) {
-                    // Load dark mode state
-                    darkModeToggle.checked = state.darkMode || false;
-                    applyDarkMode(darkModeToggle.checked);
-
-                    // Load other inputs
-                    inputs.forEach(input => {
-                        const id = input.id || input.dataset.id;
-                        if (id && state[id] !== undefined) {
-                            if (input.type === 'checkbox') {
-                                input.checked = state[id];
-                            } else {
-                                input.value = state[id];
-                            }
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        cursive: ['Dancing Script', 'cursive'],
+                    },
+                    colors: {
+                        brand: {
+                            light: '#34D399', DEFAULT: '#10B981', dark: '#059669',
                         }
-                    });
-                }
-                updateProgress();
-            }
-
-            // --- UI FUNCTIONS ---
-            function updateProgress() {
-                const totalTasks = checkboxes.length;
-                if (totalTasks === 0) return;
-                const completedTasks = Array.from(checkboxes).filter(cb => cb.checked).length;
-                const percentage = Math.round((completedTasks / totalTasks) * 100);
-                
-                progressBar.style.width = percentage + '%';
-                progressText.textContent = `${percentage}% Complete (${completedTasks} / ${totalTasks} tasks)`;
-            }
-
-            function resetChecklist() {
-                inputs.forEach(input => {
-                    if (input.type === 'checkbox') {
-                        input.checked = false;
-                    } else if (input.type !== 'date' && input.tagName.toLowerCase() !== 'select') {
-                        input.value = '';
                     }
-                });
-                // Reset select elements to the first option
-                document.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
-                saveState();
-                showAlert('Checklist Reset', 'The checklist has been cleared for the next shift.');
+                }
             }
-
-            // --- REPORT GENERATION ---
-            function generateReportHtml() {
-                    let reportHtml = `
-                        <h1>Front Desk Shift Report</h1>
-                        <p><strong>Date:</strong> ${dateInput.value}</p>
-                        <p><strong>Shift:</strong> ${shiftSelect.value}</p>
-                        <hr>
-                        <h2>At a Glance</h2>
-                        <ul>
-                            <li><strong>HSKP on Duty:</strong> ${document.getElementById('hskp-name').value || 'N/A'}</li>
-                            <li><strong>Engineer on Duty:</strong> ${document.getElementById('engineer-name').value || 'N/A'}</li>
-                            <li><strong>Arrivals:</strong> ${document.getElementById('arrivals').value || 'N/A'}</li>
-                            <li><strong>Departures:</strong> ${document.getElementById('departures').value || 'N/A'}</li>
-                            <li><strong>Projected Occupancy:</strong> ${document.getElementById('occupancy').value || 'N/A'}%</li>
-                            <li><strong>$ Rate:</strong> $${document.getElementById('rate').value || 'N/A'}</li>
-                            <li><strong>Hilton Honor Enrollments:</strong> ${document.getElementById('enrollments').value || 'N/A'}</li>
-                            <li><strong>StayPlatform Comments Reviewed:</strong> ${document.getElementById('stayplatform-comments').value}</li>
-                        </ul>
-                        <h2>Meeting Room Parking Passes</h2>
-                          <ul>
-                            <li><strong>Saguaro:</strong> ${document.querySelector('[data-id="saguaro-parking"]').value || '0'}</li>
-                            <li><strong>Cholla:</strong> ${document.querySelector('[data-id="cholla-parking"]').value || '0'}</li>
-                            <li><strong>Navajo:</strong> ${document.querySelector('[data-id="navajo-parking"]').value || '0'}</li>
-                            <li><strong>Yavapai:</strong> ${document.querySelector('[data-id="yavapai-parking"]').value || '0'}</li>
-                            <li><strong>Agave:</strong> ${document.querySelector('[data-id="agave-parking"]').value || '0'}</li>
-                            <li><strong>Atrium:</strong> ${document.querySelector('[data-id="atrium-parking"]').value || '0'}</li>
-                        </ul>
-                        <hr>
-                        <h2>Main Shift Tasks</h2><ul>`;
-
-                    document.querySelectorAll('#task-list .task-item').forEach(item => {
-                        const checkbox = item.querySelector('input[type="checkbox"]');
-                        const label = item.querySelector('label').textContent;
-                        const status = checkbox.checked ? '✓ Completed' : '✗ Pending';
-                        reportHtml += `<li><strong>[${status}]</strong> ${label}</li>`;
-                    });
-                    reportHtml += `</ul>`;
-                                        
-                    reportHtml += `<hr><h2>Shift Report & Notes</h2>`;
-                    const notes = document.getElementById('shift-notes').value.replace(/\n/g, '<br>');
-                    reportHtml += `<p>${notes || 'No notes entered.'}</p>`;
-
-                    return reportHtml;
-            }
-
-            function printPdf() {
-                const reportHtml = generateReportHtml();
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write(`
-                    <html>
-                        <head>
-                            <title>Front Desk Shift Report</title>
-                            <style>
-                                body { font-family: 'Inter', sans-serif; margin: 2rem; }
-                                h1, h2, h3 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
-                                h3 { font-size: 1.1em; margin-top: 1.5em; }
-                                ul { list-style-type: none; padding-left: 0; }
-                                li { margin-bottom: 8px; }
-                                hr { margin: 20px 0; }
-                            </style>
-                        </head>
-                        <body>
-                            ${reportHtml}
-                        </body>
-                    </html>
-                `);
-                printWindow.document.close();
-                printWindow.focus();
-                setTimeout(() => {
-                    printWindow.print();
-                    printWindow.close();
-                }, 250);
-            }
-            
-            // --- EVENT LISTENERS ---
-            appContainer.addEventListener('change', saveState);
-            resetButton.addEventListener('click', resetChecklist);
-            printPdfButton.addEventListener('click', printPdf);
-
-            // --- INITIALIZATION ---
-            loadState();
-        };
-        
-        // This ensures the initializeApp function runs only after the window, 
-        // including all scripts, is fully loaded.
-        if (document.readyState === 'complete') {
-          initializeApp();
-        } else {
-          window.addEventListener('load', initializeApp);
         }
     </script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 0.8); }
 
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .dark .glass-panel {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-card {
+            background-color: rgba(255, 255, 255, 0.75); 
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 0.75rem; 
+            overflow: hidden; 
+            transition: all 0.2s ease;
+        }
+        .dark .menu-card {
+            background-color: rgba(30, 41, 59, 0.85); 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .menu-card:hover {
+            transform: translateY(-1px);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        .dark .menu-card:hover {
+            background-color: rgba(51, 65, 85, 0.9);
+            border-color: rgba(52, 211, 153, 0.4);
+        }
+
+        .accordion-content {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .accordion-inner {
+            min-height: 0;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            padding: 0 1.5rem; 
+            background-color: rgba(255, 255, 255, 0.5);
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        .dark .accordion-inner {
+            background-color: rgba(30, 41, 59, 0.95); 
+            border-top: none; 
+        }
+
+        .menu-card.active .accordion-content { grid-template-rows: 1fr; }
+        .menu-card.active .accordion-inner { opacity: 1; padding-bottom: 1.5rem; padding-top: 0.5rem; }
+        .menu-card.active { background-color: rgba(255, 255, 255, 0.95); }
+        .dark .menu-card.active { background-color: rgba(30, 41, 59, 0.95); }
+
+        .icon { transition: transform 0.3s ease; }
+        .menu-card.active .icon { transform: rotate(180deg); }
+
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        .dark .theme-toggle {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .theme-toggle:hover { transform: scale(1.1); }
+
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .animate-text-gradient {
+            background: linear-gradient(
+                270deg, 
+                #34D399, 
+                #FFFFFF, 
+                #10B981, 
+                #34D399
+            );
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: gradient-flow 3s ease infinite;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        @keyframes pulse-bar-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); transform: scaleX(1); opacity: 0.8; }
+            50% { box-shadow: 0 0 25px rgba(52, 211, 153, 0.9); transform: scaleX(1.15); opacity: 1; }
+        }
+        
+        .animate-pulse-bar {
+            animation: pulse-bar-glow 2.5s ease-in-out infinite;
+        }
+
+        .fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .stagger-1 { animation-delay: 100ms; } .stagger-2 { animation-delay: 200ms; } .stagger-3 { animation-delay: 300ms; }
+    </style>
+</head>
+<body class="antialiased text-slate-800 dark:text-slate-100 min-h-screen flex flex-col items-center bg-slate-100 dark:bg-gray-900 transition-colors duration-500">
+    
+    <div class="fixed inset-0 z-[-2]">
+        <img src="https://i.imgur.com/HvlIXI0.jpeg" alt="Blurry Hotel Lobby Background" class="w-full h-full object-cover object-center scale-105 filter blur-sm transition-all duration-700 brightness-100 dark:brightness-[0.6]">
+    </div>
+    <div class="fixed inset-0 z-[-1] bg-gradient-to-b from-white/20 via-slate-900/20 to-slate-900/60 dark:from-black/50 dark:via-black/30 dark:to-black/70 pointer-events-none transition-all duration-700"></div>
+
+    <div class="w-full max-w-3xl px-4 py-8 sm:px-6 lg:px-8 flex-grow flex flex-col relative">
+        
+        <div class="flex justify-center items-center mb-10 sticky top-4 z-50 relative">
+            <div id="languageSelector" class="bg-white/70 dark:bg-slate-800/80 backdrop-blur-md border border-white/40 dark:border-white/10 rounded-full px-6 py-3 flex gap-4 sm:gap-6 shadow-xl fade-in-up transition-colors duration-300">
+                <button data-lang="en" class="lang-btn active transition-transform hover:scale-110 opacity-100" aria-label="English"><img src="https://flagcdn.com/w40/us.png" class="w-6 h-6 rounded-full object-cover shadow-sm" alt="USA Flag"></button>
+                <button data-lang="es" class="lang-btn transition-transform hover:scale-110 opacity-60 hover:opacity-100" aria-label="Español"><img src="https://flagcdn.com/w40/es.png" class="w-6 h-6 rounded-full object-cover shadow-sm" alt="Spain Flag"></button>
+                <button data-lang="de" class="lang-btn transition-transform hover:scale-110 opacity-60 hover:opacity-100" aria-label="Deutsch"><img src="https://flagcdn.com/w40/de.png" class="w-6 h-6 rounded-full object-cover shadow-sm" alt="Germany Flag"></button>
+                <button data-lang="fr" class="lang-btn transition-transform hover:scale-110 opacity-60 hover:opacity-100" aria-label="Français"><img src="https://flagcdn.com/w40/fr.png" class="w-6 h-6 rounded-full object-cover shadow-sm" alt="France Flag"></button>
+                <button data-lang="zh" class="lang-btn transition-transform hover:scale-110 opacity-60 hover:opacity-100" aria-label="中文"><img src="https://flagcdn.com/w40/cn.png" class="w-6 h-6 rounded-full object-cover shadow-sm" alt="China Flag"></button>
+                <button data-lang="ja" class="lang-btn transition-transform hover:scale-110 opacity-60 hover:opacity-100" aria-label="日本語"><img src="https://flagcdn.com/w40/jp.png" class="w-6 h-6 rounded-full object-cover shadow-sm" alt="Japan Flag"></button>
+            </div>
+            <button id="themeToggle" class="theme-toggle ml-4 p-3 rounded-full shadow-lg text-slate-700 dark:text-yellow-300 fade-in-up" aria-label="Toggle Dark Mode" style="animation-delay: 100ms;">
+                <svg class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <svg class="w-6 h-6 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            </button>
+        </div>
+
+        <header class="text-center mb-12 fade-in-up stagger-1">
+            <h1 class="font-extrabold text-4xl sm:text-6xl text-slate-800 dark:text-white tracking-tight drop-shadow-lg transition-colors duration-300" data-key="hotel_name">
+                Embassy Suites <br/> <span class="animate-text-gradient font-black">Downtown North</span>
+            </h1>
+            <div class="h-1.5 w-24 bg-brand rounded-full mx-auto mt-6 animate-pulse-bar transition-all duration-300"></div>
+        </header>
+
+        <div class="glass-panel rounded-3xl p-3 shadow-2xl fade-in-up stagger-2">
+            <div id="infoAccordion" class="flex flex-col space-y-1">
+
+                <!-- Parking Card -->
+                <div class="menu-card group">
+                    <button aria-expanded="false" aria-controls="content-parking" class="accordion-trigger w-full p-5 flex items-center justify-between text-left focus:outline-none">
+                        <div class="flex items-center gap-4">
+                            <div class="p-2 rounded-lg bg-brand/10 dark:bg-brand/20 text-brand-dark dark:text-brand-light transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                            </div>
+                            <span class="font-bold text-lg text-slate-800 dark:text-white tracking-wide transition-colors" data-key="parking_title">General Parking ($32 Daily)</span>
+                        </div>
+                        <svg class="icon w-5 h-5 text-slate-400 group-hover:text-brand transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="content-parking" class="accordion-content">
+                        <div class="accordion-inner pt-2">
+                            <ul class="space-y-3 marker:text-brand list-disc list-outside ml-5 text-sm sm:text-base leading-relaxed text-slate-600 dark:text-slate-300 mt-4 transition-colors">
+                                <li data-key="parking_1">Have your license plate number ready at check-in.</li>
+                                <li data-key="parking_2">Receive your parking tag and <span class="font-bold text-brand-dark dark:text-brand-light">HOTEL GUEST PASS</span> at the desk.</li>
+                                <li data-key="parking_3">Park in any spot <span class="font-bold text-rose-500 dark:text-rose-400">NOT RESERVED</span>.</li>
+                                <li class="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700/50 text-yellow-800 dark:text-yellow-200 text-sm font-medium transition-colors" data-key="parking_4">
+                                    ⚠️ Insert GUEST PASS to enter/exit. DO NOT take a new ticket.
+                                </li>
+                                <li data-key="parking_5">No refunds for direct garage payments.</li>
+                                <li data-key="parking_6">Return extra garage tickets to Front Desk.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dining Card -->
+                <div class="menu-card group">
+                    <button aria-expanded="false" aria-controls="content-dining" class="accordion-trigger w-full p-5 flex items-center justify-between text-left focus:outline-none">
+                        <div class="flex items-center gap-4">
+                            <div class="p-2 rounded-lg bg-brand/10 dark:bg-brand/20 text-brand-dark dark:text-brand-light transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0c-.454-.303-.977-.454-1.5-.454V5.454c0-.523.151-1.046.454-1.5a2.704 2.704 0 013 0 2.704 2.704 0 003 0 2.704 2.704 0 013 0 2.704 2.704 0 003 0c.303.454.454.977.454 1.5v10.092zM15 11a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+                            </div>
+                            <span class="font-bold text-lg text-slate-800 dark:text-white tracking-wide transition-colors" data-key="dining_title">Dining & Drinks</span>
+                        </div>
+                        <svg class="icon w-5 h-5 text-slate-400 group-hover:text-brand transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="content-dining" class="accordion-content">
+                        <div class="accordion-inner pt-2">
+                            <!-- Info Grid -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 mt-4">
+                                <div class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors">
+                                    <h3 class="font-bold text-brand-dark dark:text-brand-light uppercase text-xs tracking-wider mb-2" data-key="bfast_title">Breakfast</h3>
+                                    <p class="text-sm text-slate-600 dark:text-slate-300"><span class="font-semibold text-slate-800 dark:text-white" data-key="bfast_weekdays">M-F:</span> 6:00 - 9:00 am</p>
+                                    <p class="text-sm text-slate-600 dark:text-slate-300"><span class="font-semibold text-slate-800 dark:text-white" data-key="bfast_weekends">S-S:</span> 7:30 - 10:30 am</p>
+                                </div>
+                                <div class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors">
+                                    <h3 class="font-bold text-brand-dark dark:text-brand-light uppercase text-xs tracking-wider mb-2" data-key="reception_title">Reception</h3>
+                                    <p class="text-sm text-slate-600 dark:text-slate-300"><span class="font-semibold text-slate-800 dark:text-white" data-key="reception_time">Daily:</span> 5:30 - 7:00 pm</p>
+                                    <p class="text-xs mt-1 text-slate-500">Manager's Special</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Menu -->
+                            <div class="mt-6">
+                                <div class="flex items-center justify-between mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">
+                                    <h3 class="font-serif font-bold text-2xl text-slate-800 dark:text-white transition-colors" data-key="tavern_name">Salt River Tavern</h3>
+                                    <span class="text-xs font-bold bg-slate-800 dark:bg-brand-light text-white dark:text-slate-900 px-2 py-1 rounded transition-colors">5PM - 10PM</span>
+                                </div>
+                                
+                                <div class="space-y-8">
+                                    <!-- Starters -->
+                                    <div class="space-y-4">
+                                        <h4 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest" data-key="menu_starters">Starters</h4>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_soup">Rustic Tortilla Soup</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$9</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_soup">Free range grilled chicken, tortilla strips and queso fresco.</p></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_flatbread">Flat Bread</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$15</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_flatbread">Local smoked italian sausage, melted burrata, roasted pepper jam.</p></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_brussels">Brussels & Bacon</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$12</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_brussels">Apple wood bacon, balsamic glaze, candied walnut, parmesan.</p></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_wings">Grilled Wings</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$16</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_wings">SRT dry rub, blazing buffalo, honey mesquite BBQ or spiced garlic.</p></div>
+                                    </div>
+
+                                    <!-- Salads -->
+                                    <div class="space-y-4">
+                                        <h4 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest" data-key="menu_salads">Salads</h4>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_babybleu">Baby Bleu Greens</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$12</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_babybleu">South mountain baby greens, oven roasted pepitas, red delicious apples, crumbled bleu cheese, & age balsamic vinaigrette.</p></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_spinach">Spinach & Walnut</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$12</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_spinach">Arizona cherry tomatoes, baked candied walnuts, queso fresco cheese, bumble bee honey mustard dressing.</p></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_caesar">S.R.T. Romaine Caesar</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$11</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_caesar">Garlic herbed crostini, shaved parmigiana reggiano cheese, S.R.T. caesar dressing.</p></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_cobb">Arizona Corb Salad</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$12</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_cobb">Fire roasted corn, chile & lime napolitos, heirloom tomatoes, habanero bacon, manchego cheese.</p></div>
+                                    </div>
+
+                                    <!-- Handheld -->
+                                    <div class="space-y-4">
+                                        <h4 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest" data-key="menu_handheld">Handheld</h4>
+                                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-3" data-key="desc_handheld">Served with french fries or fresh fruit.</p>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_club">Grilled Turkey Club</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$16</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_club">Maple cured bacon, shaved Boars Head cracked pepper mill turkey, lettuce, tomato, munster cheese, toasted multi grain, & cranberry aoli.</p></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_burger">*Steakhouse Burger</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$17</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_burger">Certified angus beef, butter lettuce, tomato, fried onions, brioche bun, your choice of cheese.</p></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_pastrami">Pastrami Rueben</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$16</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_pastrami">Hand trimmed Boars Head pastrami, chipotle gouda cheese, S.R.T. cole slaw, 1000 island dressing, oven baked marble rye.</p></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_blackbleu">*Black & Bleu Burger</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$18</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_blackbleu">Sonoran spiced angus beef, melted bleu cheese, pico de gallo, brioche bun.</p></div>
+                                    </div>
+                                    
+                                    <!-- Mains -->
+                                    <div class="space-y-4">
+                                        <h4 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest" data-key="menu_mainplate">Mains</h4>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_salmon">Alaskan Salmon</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$29</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_salmon">Saffron risotto, prosciutto asparagus, ancho raspberry.</p></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_chicken">Bourbon Chicken</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$27</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_chicken">Roasted baby yukon potatoes, spinach, Buffalo Trace glaze.</p></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_porkchop">Pork Loin Chop</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$28</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_porkchop">Fried sweet potatoes, baby carrots, braised swiss chard.</p></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_filet">Filet & Lobster</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$34</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_filet">Grilled asparagus, fingerling potatoes, spring cherries glaze.</p></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_strip">NY Strip</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$35</span></div><p class="text-sm text-slate-500 dark:text-slate-400 leading-snug transition-colors" data-key="desc_strip">Boursin whipped potatoes, sauteed vegetables, horseradish demi glaze.</p></div>
+                                    </div>
+
+                                    <!-- Dessert -->
+                                    <div class="space-y-4">
+                                        <h4 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest" data-key="menu_dessert">Dessert</h4>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_cake">Too Tall Carrot Cake</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$8</span></div></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_pie">Apple Pie</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$8</span></div></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_cheesecake">NY Cheesecake</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$8</span></div></div>
+                                        <div class="group/item"><div class="flex justify-between items-baseline mb-1"><span class="font-bold text-slate-800 dark:text-white transition-colors" data-key="item_choc_cake">Chocolate Cake</span><span class="font-mono text-brand-dark dark:text-brand-light font-semibold transition-colors">$8</span></div></div>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] mt-8 text-slate-400 dark:text-slate-500 text-center transition-colors" data-key="menu_disclaimer">*Contains raw/undercooked ingredients. Consuming may increase foodborne illness risk.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Amenities Card -->
+                <div class="menu-card group">
+                    <button aria-expanded="false" aria-controls="content-amenities" class="accordion-trigger w-full p-5 flex items-center justify-between text-left focus:outline-none">
+                        <div class="flex items-center gap-4">
+                            <div class="p-2 rounded-lg bg-brand/10 dark:bg-brand/20 text-brand-dark dark:text-brand-light transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <span class="font-bold text-lg text-slate-800 dark:text-white tracking-wide transition-colors" data-key="amenities_title">Pool & Gym</span>
+                        </div>
+                        <svg class="icon w-5 h-5 text-slate-400 group-hover:text-brand transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="content-amenities" class="accordion-content">
+                        <div class="accordion-inner pt-2">
+                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                                <div class="bg-blue-50 dark:bg-blue-900/30 p-5 rounded-xl border border-blue-200 dark:border-blue-500/30 transition-colors">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h3 class="font-bold text-blue-900 dark:text-blue-300 transition-colors" data-key="pool_title">Pool</h3>
+                                        <svg class="w-5 h-5 text-blue-500 dark:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                                    </div>
+                                    <p class="text-2xl font-light text-blue-800 dark:text-blue-100 transition-colors">7<span class="text-sm align-top">AM</span> - 10<span class="text-sm align-top">PM</span></p>
+                                </div>
+                                <div class="bg-orange-50 dark:bg-orange-900/30 p-5 rounded-xl border border-orange-200 dark:border-orange-500/30 transition-colors">
+                                     <div class="flex items-center justify-between mb-2">
+                                        <h3 class="font-bold text-orange-900 dark:text-orange-300 transition-colors" data-key="gym_title">Gym</h3>
+                                        <svg class="w-5 h-5 text-orange-500 dark:text-orange-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                    </div>
+                                    <p class="text-2xl font-light text-orange-800 dark:text-orange-100 transition-colors">24/7</p>
+                                </div>
+                             </div>
+                             <p class="text-xs text-center mt-4 text-slate-500" data-key="amenities_disclaimer">16+ supervision required.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Wi-Fi -->
+                <div class="menu-card group">
+                    <button aria-expanded="false" aria-controls="content-wifi" class="accordion-trigger w-full p-5 flex items-center justify-between text-left focus:outline-none">
+                        <div class="flex items-center gap-4">
+                            <div class="p-2 rounded-lg bg-brand/10 dark:bg-brand/20 text-brand-dark dark:text-brand-light transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071a10 10 0 0114.142 0M1.394 8.111a15 15 0 0121.214 0"></path></svg>
+                            </div>
+                            <span class="font-bold text-lg text-slate-800 dark:text-white tracking-wide transition-colors" data-key="wifi_title">Wi-Fi Access</span>
+                        </div>
+                        <svg class="icon w-5 h-5 text-slate-400 group-hover:text-brand transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="content-wifi" class="accordion-content">
+                        <!-- Reduced vertical padding (pb-4, pt-2) and inner element margins -->
+                        <div class="accordion-inner pt-2 flex flex-col items-center text-center pb-4">
+                            <div class="mb-2 mt-2"> <!-- Reduced margin here -->
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mb-1 transition-colors">Network</p>
+                                <p class="font-bold text-lg text-slate-900 dark:text-white transition-colors">Hilton Honors</p>
+                            </div>
+                            <!-- Reduced padding on the code box -->
+                            <div id="wifiCode" class="bg-white dark:bg-slate-800 p-3 rounded-xl shadow-inner border border-slate-200 dark:border-slate-700 w-full max-w-xs relative group/code cursor-pointer hover:border-brand/50 transition-colors">
+                                <p class="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1 transition-colors">Promo Code</p>
+                                <p class="font-mono text-2xl text-brand-dark dark:text-brand-light font-bold transition-colors">E2025</p>
+                                <div class="absolute inset-0 bg-black/5 dark:bg-white/5 opacity-0 group-hover/code:opacity-100 transition-opacity flex items-center justify-center rounded-xl backdrop-blur-[1px]">
+                                    <span id="wifiCopyText" class="text-xs font-bold text-slate-800 dark:text-white">Click to Copy</span>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-sm space-y-1 text-slate-500 dark:text-slate-400 transition-colors"> <!-- Reduced margin here -->
+                                <p data-key="wifi_2">If page doesn't load, visit <code class="bg-slate-200 dark:bg-slate-700 px-1 rounded transition-colors">cnn.com</code></p>
+                                <p data-key="wifi_5">Support: (888)-830-5099</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5: Info -->
+                <div class="menu-card group">
+                    <button aria-expanded="false" aria-controls="content-info" class="accordion-trigger w-full p-5 flex items-center justify-between text-left focus:outline-none">
+                        <div class="flex items-center gap-4">
+                            <div class="p-2 rounded-lg bg-brand/10 dark:bg-brand/20 text-brand-dark dark:text-brand-light transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <span class="font-bold text-lg text-slate-800 dark:text-white tracking-wide transition-colors" data-key="info_title">Hotel Information</span>
+                        </div>
+                        <svg class="icon w-5 h-5 text-slate-400 group-hover:text-brand transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="content-info" class="accordion-content">
+                        <div class="accordion-inner pt-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-sm mt-4">
+                                <div class="flex justify-between border-b border-dashed border-slate-300 dark:border-slate-700 pb-1 transition-colors">
+                                    <span class="text-slate-500 dark:text-slate-400 transition-colors" data-key="info_checkout_label">Checkout</span>
+                                    <span class="font-bold text-slate-900 dark:text-white transition-colors" data-key="info_checkout_time">12:00 PM</span>
+                                </div>
+                                <div class="flex justify-between border-b border-dashed border-slate-300 dark:border-slate-700 pb-1 transition-colors">
+                                    <span class="text-slate-500 dark:text-slate-400 transition-colors" data-key="info_phone_label">Phone</span>
+                                    <a href="tel:6022221111" class="font-bold text-slate-900 dark:text-white hover:text-brand transition-colors" data-key="info_phone_value">(602)-222-1111</a>
+                                </div>
+                                <div class="flex justify-between border-b border-dashed border-slate-300 dark:border-slate-700 pb-1 transition-colors">
+                                    <span class="text-slate-500 dark:text-slate-400 transition-colors" data-key="info_text_label">Text</span>
+                                    <span class="font-bold text-slate-900 dark:text-white transition-colors" data-key="info_text_value">(928)-857-4811</span>
+                                </div>
+                                <div class="flex justify-between border-b border-dashed border-slate-300 dark:border-slate-700 pb-1 transition-colors">
+                                    <span class="text-slate-500 dark:text-slate-400 transition-colors" data-key="info_email_label">Email</span>
+                                    <a href="mailto:PHXES_FO@HILTON.COM" class="font-bold text-slate-900 dark:text-white hover:text-brand transition-colors lowercase">phxes_fo@hilton.com</a>
+                                </div>
+                                <div class="sm:col-span-2 mt-2 text-center">
+                                    <p class="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1 transition-colors" data-key="info_address_label">Address</p>
+                                    <p class="font-medium text-slate-700 dark:text-slate-300 transition-colors" data-key="info_address_value">10 East Thomas Road, Phoenix, AZ 85012</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <footer class="text-center mt-10 fade-in-up stagger-3">
+            <p class="font-cursive text-3xl text-slate-800 dark:text-white/90 drop-shadow-sm dark:drop-shadow-md transition-colors" data-key="footer_slogan">For the Stay</p>
+        </footer>
+    </div>
+
+    <script>
+        const translations = {
+            'en': {
+                hotel_name: `Embassy Suites <br/> <span class="animate-text-gradient font-black">Downtown North</span>`,
+                parking_title: "General Parking ($32 Daily)",
+                parking_1: "Have your license plate number ready at check-in.",
+                parking_2: `Receive your parking tag and <span class="font-bold text-brand-dark dark:text-brand-light">HOTEL GUEST PASS</span> at the desk.`,
+                parking_3: `Park in any spot <span class="font-bold text-rose-500 dark:text-rose-400">NOT RESERVED</span>.`,
+                parking_4: `⚠️ Insert GUEST PASS to enter/exit. DO NOT take a new ticket.`,
+                parking_5: "No refunds for direct garage payments.",
+                parking_6: "Return extra garage tickets to Front Desk.",
+                dining_title: "Dining & Drinks",
+                bfast_title: "Breakfast",
+                bfast_weekdays: "M-F:",
+                bfast_weekends: "S-S:",
+                reception_title: "Reception",
+                reception_time: "Daily:",
+                tavern_name: "Salt River Tavern",
+                menu_starters: "Starters",
+                item_soup: "Rustic Tortilla Soup",
+                desc_soup: "Free range grilled chicken, tortilla strips and queso fresco.",
+                item_flatbread: "Flat Bread",
+                desc_flatbread: "Local smoked italian sausage, melted burrata, roasted pepper jam.",
+                item_brussels: "Brussels & Bacon",
+                desc_brussels: "Apple wood bacon, balsamic glaze, candied walnut, parmesan.",
+                item_wings: "Grilled Wings",
+                desc_wings: "SRT dry rub, blazing buffalo, honey mesquite BBQ or spiced garlic.",
+                menu_salads: "Salads",
+                item_babybleu: "Baby Bleu Greens",
+                desc_babybleu: "South mountain baby greens, oven roasted pepitas, red delicious apples, crumbled bleu cheese, & age balsamic vinaigrette.",
+                item_spinach: "Spinach & Walnut",
+                desc_spinach: "Arizona cherry tomatoes, baked candied walnuts, queso fresco cheese, bumble bee honey mustard dressing.",
+                item_caesar: "S.R.T. Romaine Caesar",
+                desc_caesar: "Garlic herbed crostini, shaved parmigiana reggiano cheese, S.R.T. caesar dressing.",
+                item_cobb: "Arizona Corb Salad",
+                desc_cobb: "Fire roasted corn, chile & lime napolitos, heirloom tomatoes, habanero bacon, manchego cheese.",
+                menu_handheld: "Handheld",
+                desc_handheld: "Served with french fries or fresh fruit.",
+                item_club: "Grilled Turkey Club",
+                desc_club: "Maple cured bacon, shaved Boars Head cracked pepper mill turkey, lettuce, tomato, munster cheese, toasted multi grain, & cranberry aoli.",
+                item_burger: "*Steakhouse Burger",
+                desc_burger: "Certified angus beef, butter lettuce, tomato, fried onions, brioche bun, your choice of cheese.",
+                item_pastrami: "Pastrami Rueben",
+                desc_pastrami: "Hand trimmed Boars Head pastrami, chipotle gouda cheese, S.R.T. cole slaw, 1000 island dressing, oven baked marble rye.",
+                item_blackbleu: "*Black & Bleu Burger",
+                desc_blackbleu: "Sonoran spiced angus beef, melted bleu cheese, pico de gallo, brioche bun.",
+                menu_mainplate: "Mains",
+                item_salmon: "Alaskan Salmon",
+                desc_salmon: "Saffron risotto, prosciutto asparagus, ancho raspberry.",
+                item_chicken: "Bourbon Chicken",
+                desc_chicken: "Roasted baby yukon potatoes, spinach, Buffalo Trace glaze.",
+                item_porkchop: "Pork Loin Chop",
+                desc_porkchop: "Fried sweet potatoes, baby carrots, braised swiss chard.",
+                item_filet: "Filet & Lobster",
+                desc_filet: "Grilled asparagus, fingerling potatoes, spring cherries glaze.",
+                item_strip: "NY Strip",
+                desc_strip: "Boursin whipped potatoes, sauteed vegetables, horseradish demi glaze.",
+                menu_dessert: "Dessert",
+                item_cake: "Too Tall Carrot Cake",
+                item_pie: "Apple Pie",
+                item_cheesecake: "NY Cheesecake",
+                item_choc_cake: "Chocolate Cake",
+                menu_disclaimer: "*Contains raw/undercooked ingredients. Consuming may increase foodborne illness risk.",
+                amenities_title: "Pool & Gym",
+                pool_title: "Pool",
+                gym_title: "Gym",
+                amenities_disclaimer: "16+ supervision required.",
+                wifi_title: "Wi-Fi Access",
+                wifi_2: `If page doesn't load, visit <code class="bg-slate-200 dark:bg-slate-700 px-1 rounded transition-colors">cnn.com</code>`,
+                wifi_5: `Support: (888)-830-5099`,
+                info_title: "Hotel Information",
+                info_checkout_label: "Checkout",
+                info_checkout_time: "12:00 PM",
+                info_address_label: "Address",
+                info_address_value: "10 East Thomas Road, Phoenix, AZ 85012",
+                info_phone_label: "Phone",
+                info_phone_value: "(602)-222-1111",
+                info_text_label: "Text",
+                info_text_value: "(928)-857-4811",
+                info_email_label: "Email",
+                info_email_value: "phxes_fo@hilton.com",
+                footer_slogan: "For the Stay"
+            },
+            'es': {
+                hotel_name: `Embassy Suites <br/> <span class="animate-text-gradient font-black">Centro Norte</span>`,
+                parking_title: "Estacionamiento ($32/Día)",
+                parking_1: "Tenga a mano su número de placa al registrarse.",
+                parking_2: `Reciba su etiqueta y <span class="font-bold text-brand-dark dark:text-brand-light">PASE DE HUÉSPED</span> en recepción.`,
+                parking_3: `Estacione donde <span class="font-bold text-rose-500 dark:text-rose-400">NO ESTÉ RESERVADO</span>.`,
+                parking_4: `⚠️ Inserte PASE DE HUÉSPED para entrar/salir. NO tome boleto nuevo.`,
+                parking_5: "No hay reembolsos por pagos directos al garaje.",
+                parking_6: "Devuelva boletos extra a la recepción.",
+                dining_title: "Comida y Bebida",
+                bfast_title: "Desayuno",
+                bfast_weekdays: "L-V:",
+                bfast_weekends: "S-D:",
+                reception_title: "Recepción",
+                reception_time: "Diario:",
+                tavern_name: "Taberna Salt River",
+                menu_starters: "Entradas",
+                item_soup: "Sopa de Tortilla",
+                desc_soup: "Pollo a la parrilla, tiras de tortilla y queso fresco.",
+                item_flatbread: "Pan Plano",
+                desc_flatbread: "Salchicha italiana ahumada, burrata derretida, mermelada de pimiento.",
+                item_brussels: "Coles y Tocino",
+                desc_brussels: "Tocino de manzano, glaseado balsámico, nuez confitada.",
+                item_wings: "Alitas a la Parrilla",
+                desc_wings: "Frotado seco SRT, búfalo picante, barbacoa miel o ajo.",
+                menu_salads: "Ensaladas",
+                item_babybleu: "Verdes Baby Bleu",
+                desc_babybleu: "Verdes baby de South Mountain, pepitas tostadas al horno, manzanas red delicious, queso azul desmenuzado y vinagreta balsámica envejecida.",
+                item_spinach: "Espinacas y Nueces",
+                desc_spinach: "Tomates cherry de Arizona, nueces confitadas al horno, queso fresco, aderezo de mostaza y miel.",
+                item_caesar: "Ensalada César S.R.T. a la Romana",
+                desc_caesar: "Crostini con hierbas y ajo, queso parmigiano reggiano rallado, aderezo César S.R.T.",
+                item_cobb: "Ensalada Corb de Arizona",
+                desc_cobb: "Maíz asado al fuego, nopalitos con chile y lima, tomates heirloom, tocino con habanero, queso manchego.",
+                menu_handheld: "Bocadillos",
+                desc_handheld: "Servido con papas fritas o fruta fresca.",
+                item_club: "Club Sándwich de Pavo a la Parrilla",
+                desc_club: "Tocino curado con arce, pavo Boars Head molido a la pimienta, lechuga, tomate, queso munster, pan multigrano tostado y alioli de arándano.",
+                item_burger: "*Hamburguesa de Asador",
+                desc_burger: "Carne de res Angus certificada, lechuga mantequilla, tomate, cebolla frita, pan brioche, su elección de queso.",
+                item_pastrami: "Sándwich de Pastrami Reuben",
+                desc_pastrami: "Pastrami Boars Head recortado a mano, queso gouda chipotle, ensalada de col S.R.T., aderezo mil islas, pan de centeno marmoleado horneado.",
+                item_blackbleu: "*Hamburguesa Black & Bleu",
+                desc_blackbleu: "Carne de res Angus con especias de Sonora, queso azul derretido, pico de gallo, pan brioche.",
+                menu_mainplate: "Fuertes",
+                item_salmon: "Salmón de Alaska",
+                desc_salmon: "Risotto de azafrán, espárragos con prosciutto, framboise.",
+                item_chicken: "Pollo al Bourbon",
+                desc_chicken: "Papas baby yukon, espinacas, glaseado Buffalo Trace.",
+                item_porkchop: "Chuleta de Lomo de Cerdo",
+                desc_porkchop: "Batatas fritas, zanahorias baby, acelgas estofadas.",
+                item_filet: "Filete y Langosta",
+                desc_filet: "Espárragos a la parrilla, papas alevines, glaseado de cerezas.",
+                item_strip: "*Bistec New York Prime Añejo",
+                desc_strip: "Puré de papas batido con Boursin, verduras salteadas, demi-glace de rábano picante.",
+                menu_dessert: "Postre",
+                item_cake: "Pastel de Zanahoria Demasiado Alto",
+                item_pie: "Tarta de Manzana y Caramelo Honda",
+                item_cheesecake: "Tarta de Queso de Nueva York",
+                item_choc_cake: "Pastel de Chocolate",
+                menu_disclaimer: "*Contiene ingredientes crudos. El consumo puede aumentar riesgo de enfermedad.",
+                amenities_title: "Piscina y Gimnasio",
+                pool_title: "Piscina",
+                gym_title: "Gimnasio",
+                amenities_disclaimer: "Supervisión requerida para menores de 16.",
+                wifi_title: "Acceso Wi-Fi",
+                wifi_2: `Si no carga, visite <code class="bg-slate-200 dark:bg-slate-700 px-1 rounded transition-colors">cnn.com</code>`,
+                wifi_5: `Soporte: (888)-830-5099`,
+                info_title: "Información",
+                info_checkout_label: "Salida",
+                info_checkout_time: "12:00 PM",
+                info_address_label: "Dirección",
+                info_address_value: "10 East Thomas Road, Phoenix, AZ 85012",
+                info_phone_label: "Teléfono",
+                info_phone_value: "(602)-222-1111",
+                info_text_label: "Texto",
+                info_text_value: "(928)-857-4811",
+                info_email_label: "Correo",
+                info_email_value: "phxes_fo@hilton.com",
+                footer_slogan: "Para la Estancia"
+            },
+            'de': {
+                hotel_name: `Embassy Suites <br/> <span class="animate-text-gradient font-black">Downtown Nord</span>`,
+                parking_title: "Parken ($32/Tag)",
+                parking_1: "Halten Sie Ihr Kennzeichen beim Check-in bereit.",
+                parking_2: `Erhalten Sie Parkausweis und <span class="font-bold text-brand-dark dark:text-brand-light">GÄSTEPASS</span> an der Rezeption.`,
+                parking_3: `Parken Sie auf <span class="font-bold text-rose-500 dark:text-rose-400">NICHT RESERVIERTEN</span> Plätzen.`,
+                parking_4: `⚠️ GÄSTEPASS zum Ein-/Ausfahren nutzen. KEIN neues Ticket ziehen.`,
+                parking_5: "Keine Rückerstattung für Direktzahlungen.",
+                parking_6: "Zusätzliche Tickets an der Rezeption abgeben.",
+                dining_title: "Essen & Trinken",
+                bfast_title: "Frühstück",
+                bfast_weekdays: "Mo-Fr:",
+                bfast_weekends: "Sa-So:",
+                reception_title: "Empfang",
+                reception_time: "Täglich:",
+                tavern_name: "Salt River Taverne",
+                menu_starters: "Vorspeisen",
+                item_soup: "Tortillasuppe",
+                desc_soup: "Gegrilltes Hähnchen, Tortillastreifen und Queso Fresco.",
+                item_flatbread: "Fladenbrot",
+                desc_flatbread: "Geräucherte Wurst, geschmolzener Burrata, Paprikamarmelade.",
+                item_brussels: "Rosenkohl & Speck",
+                desc_brussels: "Apfelholzspeck, Balsamico, kandierte Walnuss.",
+                item_wings: "Gegrillte Flügel",
+                desc_wings: "SRT-Gewürz, scharfer Büffel, Honig-BBQ oder Knoblauch.",
+                menu_salads: "Salate",
+                item_babybleu: "Baby Bleu Greens",
+                desc_babybleu: "South Mountain Baby Greens, geröstete Pepitas, rote Äpfel, Blauschimmelkäse & Balsamico.",
+                item_spinach: "Spinat & Walnuss",
+                desc_spinach: "Arizona Kirschtomaten, kandierte Walnüsse, Queso Fresco, Honig-Senf-Dressing.",
+                item_caesar: "S.R.T. Romaine Caesar",
+                desc_caesar: "Knoblauch-Kräuter-Crostini, gehobelter Parmesan, Caesar-Dressing.",
+                item_cobb: "Arizona Corb Salat",
+                desc_cobb: "Gerösteter Mais, Nopalitos, Heirloom-Tomaten, Habanero-Speck, Manchego.",
+                menu_handheld: "Handgerichte",
+                desc_handheld: "Serviert mit Pommes Frites oder frischem Obst.",
+                item_club: "Gegrillter Truthahn-Club",
+                desc_club: "Ahorn-Speck, Pfeffer-Truthahn, Salat, Tomate, Münsterkäse, Mehrkornbrot & Cranberry-Aioli.",
+                item_burger: "*Steakhouse Burger",
+                desc_burger: "Angus-Rindfleisch, Butterkopfsalat, Tomate, Röstzwiebeln, Brioche, Käse nach Wahl.",
+                item_pastrami: "Pastrami Rueben",
+                desc_pastrami: "Pastrami, Chipotle-Gouda, Krautsalat, 1000-Island-Dressing, Marmor-Roggen.",
+                item_blackbleu: "*Black & Bleu Burger",
+                desc_blackbleu: "Gewürztes Angus-Rindfleisch, Blauschimmelkäse, Pico de Gallo, Brioche.",
+                menu_mainplate: "Hauptgerichte",
+                item_salmon: "Alaska-Lachs",
+                desc_salmon: "Safranrisotto, Prosciutto-Spargel, Himbeere.",
+                item_chicken: "Bourbon-Hähnchen",
+                desc_chicken: "Geröstete Kartoffeln, Spinat, Buffalo-Trace-Glasur.",
+                item_porkchop: "Schweinekotelett",
+                desc_porkchop: "Gebratene Süßkartoffeln, Babykarotten, geschmorter Mangold.",
+                item_filet: "Filet & Hummer",
+                desc_filet: "Gegrillter Spargel, Fingerling-Kartoffeln, Kirschglasur.",
+                item_strip: "NY Strip",
+                desc_strip: "Boursin-Kartoffelpüree, sautiertes Gemüse, Meerrettich-Demi-Glace.",
+                menu_dessert: "Dessert",
+                item_cake: "Karottenkuchen",
+                item_pie: "Apfelkuchen",
+                item_cheesecake: "NY Käsekuchen",
+                item_choc_cake: "Schokoladenkuchen",
+                menu_disclaimer: "*Enthält rohe Zutaten. Verzehr kann Krankheitsrisiko erhöhen.",
+                amenities_title: "Pool & Fitness",
+                pool_title: "Pool",
+                gym_title: "Fitness",
+                amenities_disclaimer: "Aufsicht für unter 16-Jährige erforderlich.",
+                wifi_title: "WLAN-Zugang",
+                wifi_2: `Falls Seite nicht lädt, besuchen Sie <code class="bg-slate-200 dark:bg-slate-700 px-1 rounded transition-colors">cnn.com</code>`,
+                wifi_5: `Support: (888)-830-5099`,
+                info_title: "Informationen",
+                info_checkout_label: "Abreise",
+                info_checkout_time: "12:00 Uhr",
+                info_address_label: "Adresse",
+                info_address_value: "10 East Thomas Road, Phoenix, AZ 85012",
+                info_phone_label: "Telefon",
+                info_phone_value: "(602)-222-1111",
+                info_text_label: "SMS",
+                info_text_value: "(928)-857-4811",
+                info_email_label: "Email",
+                info_email_value: "phxes_fo@hilton.com",
+                footer_slogan: "Für den Aufenthalt"
+            },
+             'fr': {
+                hotel_name: `Embassy Suites <br/> <span class="animate-text-gradient font-black">Centre-ville Nord</span>`,
+                parking_title: "Parking (32 $/Jour)",
+                parking_1: "Préparez votre numéro de plaque à l'arrivée.",
+                parking_2: `Recevez votre vignette et <span class="font-bold text-brand-dark dark:text-brand-light">PASS INVITÉ</span> à la réception.`,
+                parking_3: `Garez-vous sur les places <span class="font-bold text-rose-400">NON RÉSERVÉES</span>.`,
+                parking_4: `⚠️ Insérez le PASS INVITÉ pour entrer/sortir. NE prenez PAS de ticket.`,
+                parking_5: "Pas de remboursement pour paiements directs.",
+                parking_6: "Retournez les tickets supplémentaires à la réception.",
+                dining_title: "Repas et Boissons",
+                bfast_title: "Petit-déjeuner",
+                bfast_weekdays: "L-V :",
+                bfast_weekends: "S-D :",
+                reception_title: "Réception",
+                reception_time: "Tous les jours :",
+                tavern_name: "Taverne Salt River",
+                menu_starters: "Entrées",
+                item_soup: "Soupe Tortilla",
+                desc_soup: "Poulet grillé, lanières de tortilla et queso fresco.",
+                item_flatbread: "Pain Plat",
+                desc_flatbread: "Saucisse fumée, burrata fondue, confiture de poivrons.",
+                item_brussels: "Choux & Bacon",
+                desc_brussels: "Bacon, vinaigre balsamique, noix confites.",
+                item_wings: "Ailes Grillées",
+                desc_wings: "Épices SRT, buffalo piquant, barbecue miel ou ail.",
+                menu_mainplate: "Plats",
+                item_salmon: "Saumon d'Alaska",
+                desc_salmon: "Risotto safran, asperges prosciutto, framboise.",
+                item_chicken: "Poulet Bourbon",
+                desc_chicken: "Pommes de terre rôties, épinards, glaçage Buffalo Trace.",
+                item_filet: "Filet & Homard",
+                desc_filet: "Asperges grillées, pommes de terre, glaçage cerises.",
+                menu_disclaimer: "*Contient des ingrédients crus. Peut augmenter les risques sanitaires.",
+                amenities_title: "Piscine et Sport",
+                pool_title: "Piscine",
+                gym_title: "Sport",
+                amenities_disclaimer: "Supervision requise pour les -16 ans.",
+                wifi_title: "Accès Wi-Fi",
+                wifi_2: `Si la page ne charge pas, visitez <code class="bg-slate-200 dark:bg-slate-700 px-1 rounded">cnn.com</code>`,
+                wifi_5: `Support : (888)-830-5099`,
+                info_title: "Informations",
+                info_checkout_label: "Départ",
+                info_checkout_time: "12:00",
+                info_address_label: "Adresse",
+                info_address_value: "10 East Thomas Road, Phoenix, AZ 85012",
+                info_phone_label: "Tél",
+                info_phone_value: "(602)-222-1111",
+                info_text_label: "SMS",
+                info_text_value: "(928)-857-4811",
+                info_email_label: "Email",
+                info_email_value: "phxes_fo@hilton.com",
+                footer_slogan: "Pour le Séjour"
+            },
+            'zh': {
+                hotel_name: `Embassy Suites <br/> <span class="animate-text-gradient font-black">市中心北</span>`,
+                parking_title: "停车（每日32美元）",
+                parking_1: "入住时准备好车牌号。",
+                parking_2: `在前台领取<span class="font-bold text-brand-dark dark:text-brand-light">酒店客人通行证</span>。`,
+                parking_3: `停在<span class="font-bold text-rose-500 dark:text-rose-400">未预留</span>的车位。`,
+                parking_4: `⚠️ 插入通行证进出。不要取新票。`,
+                parking_5: "直接支付不予退款。",
+                parking_6: "多余票据交还前台。",
+                dining_title: "餐饮",
+                bfast_title: "早餐",
+                bfast_weekdays: "周一至周五：",
+                bfast_weekends: "周末：",
+                reception_title: "招待会",
+                reception_time: "每日：",
+                tavern_name: "盐河酒馆",
+                menu_starters: "前菜",
+                item_soup: "玉米饼汤",
+                desc_soup: "烤鸡，玉米饼条，奶酪。",
+                item_flatbread: "扁面包",
+                desc_flatbread: "烟熏香肠，布拉塔奶酪，烤椒酱。",
+                item_brussels: "抱子甘蓝",
+                desc_brussels: "培根，香醋，核桃。",
+                item_wings: "烤翅",
+                desc_wings: "干擦香料，水牛城辣酱，蜂蜜烧烤或蒜味。",
+                menu_mainplate: "主菜",
+                item_salmon: "阿拉斯加鲑鱼",
+                desc_salmon: "藏红花烩饭，芦笋，覆盆子。",
+                item_chicken: "波旁鸡",
+                desc_chicken: "烤土豆，菠菜，波旁釉。",
+                item_filet: "菲力牛排",
+                desc_filet: "烤芦笋，小土豆，樱桃釉。",
+                menu_disclaimer: "*含生食成分。食用可能增加风险。",
+                amenities_title: "泳池和健身",
+                pool_title: "泳池",
+                gym_title: "健身房",
+                amenities_disclaimer: "16岁以下需成人陪同。",
+                wifi_title: "Wi-Fi",
+                wifi_2: `如未加载，访问 <code class="bg-slate-200 dark:bg-slate-700 px-1 rounded">cnn.com</code>`,
+                wifi_5: `支持：(888)-830-5099`,
+                info_title: "信息",
+                info_checkout_label: "退房",
+                info_checkout_time: "12:00 PM",
+                info_address_label: "地址",
+                info_address_value: "10 East Thomas Road, Phoenix, AZ 85012",
+                info_phone_label: "电话",
+                info_phone_value: "(602)-222-1111",
+                info_text_label: "短信",
+                info_text_value: "(928)-857-4811",
+                info_email_label: "邮箱",
+                info_email_value: "phxes_fo@hilton.com",
+                footer_slogan: "为您的住宿"
+            },
+            'ja': {
+                hotel_name: `Embassy Suites <br/> <span class="animate-text-gradient font-black">ダウンタウン・ノース</span>`,
+                parking_title: "駐車場（1日32ドル）",
+                parking_1: "チェックイン時にナンバープレートをご用意ください。",
+                parking_2: `フロントで<span class="font-bold text-brand-dark dark:text-brand-light">ゲストパス</span>をお受け取りください。`,
+                parking_3: `<span class="font-bold text-rose-500 dark:text-rose-400">予約済み以外</span>の場所に駐車してください。`,
+                parking_4: `⚠️ ゲストパスを挿入して入出庫。新券は取らないでください。`,
+                parking_5: "直接払いの返金は不可。",
+                parking_6: "余分な券はフロントへ。",
+                dining_title: "お食事",
+                bfast_title: "朝食",
+                bfast_weekdays: "平日：",
+                bfast_weekends: "週末：",
+                reception_title: "レセプション",
+                reception_time: "毎日：",
+                tavern_name: "ソルトリバータバーン",
+                menu_starters: "前菜",
+                item_soup: "トルティーヤスープ",
+                desc_soup: "グリルチキン、チーズ。",
+                item_flatbread: "フラットブレッド",
+                desc_flatbread: "ソーセージ、ブッラータ、ペッパージャム。",
+                item_brussels: "芽キャベツ",
+                desc_brussels: "ベーコン、バルサミコ、くるみ。",
+                item_wings: "グリルウィング",
+                desc_wings: "スパイス、バッファロー、BBQ、またはガーリック。",
+                menu_mainplate: "メイン",
+                item_salmon: "サーモン",
+                desc_salmon: "リゾット、アスパラガス。",
+                item_chicken: "バーボンチキン",
+                desc_chicken: "ローストポテト、ほうれん草。",
+                item_filet: "フィレ＆ロブスター",
+                desc_filet: "アスパラガス、チェリーソース。",
+                menu_disclaimer: "*生の食材を含みます。リスクをご了承ください。",
+                amenities_title: "プール＆ジム",
+                pool_title: "プール",
+                gym_title: "ジム",
+                amenities_disclaimer: "16歳未満は要監視。",
+                wifi_title: "Wi-Fi",
+                wifi_2: `開かない場合 <code class="bg-slate-200 dark:bg-slate-700 px-1 rounded">cnn.com</code> へ`,
+                wifi_5: `サポート：(888)-830-5099`,
+                info_title: "情報",
+                info_checkout_label: "チェックアウト",
+                info_checkout_time: "12:00 PM",
+                info_address_label: "住所",
+                info_address_value: "10 East Thomas Road, Phoenix, AZ 85012",
+                info_phone_label: "電話",
+                info_phone_value: "(602)-222-1111",
+                info_text_label: "SMS",
+                info_text_value: "(928)-857-4811",
+                info_email_label: "メール",
+                info_email_value: "phxes_fo@hilton.com",
+                footer_slogan: "ご滞在のために"
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            function translatePage(language) {
+                const langData = { ...translations['en'], ...translations[language] };
+
+                document.querySelectorAll('[data-key]').forEach(element => {
+                    const key = element.getAttribute('data-key');
+                    if (langData[key]) {
+                        element.innerHTML = langData[key];
+                    }
+                });
+            }
+            
+            const languageSelector = document.getElementById('languageSelector');
+            if (languageSelector) {
+                languageSelector.addEventListener('click', function(e) {
+                    const button = e.target.closest('button[data-lang]');
+                    if (!button) return;
+
+                    const language = button.dataset.lang;
+                    translatePage(language);
+                    
+                    // Visual update
+                    languageSelector.querySelector('.active').classList.remove('active');
+                    button.classList.add('active');
+                });
+            }
+
+            const accordion = document.getElementById('infoAccordion');
+            if (accordion) {
+                accordion.addEventListener('click', function(e) {
+                    const button = e.target.closest('.accordion-trigger');
+                    if (!button) return;
+
+                    const card = button.closest('.menu-card');
+                    const wasActive = card.classList.contains('active');
+                    
+                    // Close all other cards
+                    accordion.querySelectorAll('.menu-card').forEach(c => {
+                        c.classList.remove('active');
+                        c.querySelector('.accordion-trigger').setAttribute('aria-expanded', 'false');
+                    });
+                    
+                    if (!wasActive) {
+                        card.classList.add('active');
+                        button.setAttribute('aria-expanded', 'true');
+                    }
+                });
+            }
+
+            // Clipboard Copy Feedback
+            const wifiCode = document.getElementById('wifiCode');
+            if (wifiCode) {
+                wifiCode.addEventListener('click', function() {
+                    const code = 'E2025';
+                    navigator.clipboard.writeText(code).then(() => {
+                        const copyText = document.getElementById('wifiCopyText');
+                        const originalText = copyText.innerText;
+                        copyText.innerText = "Copied!";
+                        setTimeout(() => {
+                            copyText.innerText = originalText;
+                        }, 2000);
+                    });
+                });
+            }
+
+            // Theme Toggle Logic
+            const themeToggle = document.getElementById('themeToggle');
+            const htmlElement = document.documentElement;
+
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    if (htmlElement.classList.contains('dark')) {
+                        htmlElement.classList.remove('dark');
+                        localStorage.setItem('theme', 'light');
+                    } else {
+                        htmlElement.classList.add('dark');
+                        localStorage.setItem('theme', 'dark');
+                    }
+                });
+
+                // Check localStorage on load
+                if (localStorage.getItem('theme') === 'light') {
+                    htmlElement.classList.remove('dark');
+                } else {
+                    htmlElement.classList.add('dark');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
-
